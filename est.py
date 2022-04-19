@@ -110,7 +110,7 @@ def main():
     backendsIBMQ = None
     TOKEN_FILE = os.environ.get('IBMQ_TOKEN')
 
-    if exists(TOKEN_FILE):
+    if TOKEN_FILE != None and exists(TOKEN_FILE):
         with open(TOKEN_FILE) as f:
             TOKEN=f.read()
 
