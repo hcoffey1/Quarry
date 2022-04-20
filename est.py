@@ -1,3 +1,4 @@
+from ctypes.wintypes import MAX_PATH
 from qiskit import QuantumCircuit, Aer, execute, IBMQ
 import Eval_Metrics as EM
 import sys
@@ -7,8 +8,11 @@ from os.path import exists
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
 
-#Machines available from IBM for basic account
-from qiskit.test.mock import FakeArmonk, FakeBelem, FakeBogota, FakeManila, FakeQuito, FakeSantiago
+#0: Use all available cores
+MAX_JOBS=0
+
+#Mockup backends
+import qiskit.test.mock.backends as BE
 
 def getGateCounts(qc, basisGates):
     """Get counts of each gate type in the given circuit"""
@@ -46,6 +50,7 @@ def simCircuit(resultDict, qc, backend):
 
     backendName = backend.configuration().backend_name
     basisGates = backend.configuration().basis_gates
+    print(backendName)
 
     if "swap" not in basisGates:
         basisGates = basisGates + ["swap"]
@@ -55,8 +60,8 @@ def simCircuit(resultDict, qc, backend):
     swapCount = getGateCounts(swap_qc, basisGates)['swap']
 
     ideal_result = execute(
-        qc, backend=Aer.get_backend('qasm_simulator')).result()
-    noisy_result = execute(qc, backend=backend).result()
+        qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()
+    noisy_result = execute(qc, backend=backend, max_parallel_threads=MAX_JOBS).result()
 
     PST = EM.Compute_PST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
@@ -64,8 +69,8 @@ def simCircuit(resultDict, qc, backend):
     TVD = EM.Compute_TVD(dict_ideal=ideal_result.get_counts(
     ), dict_in=noisy_result.get_counts())
 
-    IST = EM.Compute_IST(correct_answer=ideal_result.get_counts(
-    ).keys(), dict_in=noisy_result.get_counts())
+    #IST = EM.Compute_IST(correct_answer=ideal_result.get_counts(
+    #).keys(), dict_in=noisy_result.get_counts())
 
     Entropy = EM.Compute_Entropy(dict_in=noisy_result.get_counts())
 
@@ -76,7 +81,7 @@ def simCircuit(resultDict, qc, backend):
         resultDict[qc.name][backendName] = {}
 
     resultDict[qc.name][backendName] = [
-        ideal_result, noisy_result, PST, TVD, IST, Entropy, swapCount]
+        ideal_result, noisy_result, PST, TVD, Entropy, swapCount]
 
 def simCircuitIBMQ(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
@@ -85,8 +90,8 @@ def simCircuitIBMQ(resultDict, qc, backend):
     nm = NoiseModel.from_backend(backend)
 
     ideal_result = execute(
-        qc, backend=Aer.get_backend('qasm_simulator')).result()
-    noisy_result = execute(qc, backend=Aer.get_backend('qasm_simulator'), noise_model=nm).result()
+        qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()
+    noisy_result = execute(qc, backend=Aer.get_backend('qasm_simulator'), noise_model=nm, max_parallel_threads=MAX_JOBS).result()
 
     PST = EM.Compute_PST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
@@ -116,7 +121,6 @@ def printResults(resultDict):
         ("Backend Name", 20),
         ("PST", 10),
         ("TVD", 10),
-        ("IST", 10),
         ("Entropy", 10),
         ("Swaps", 10)
     ]
@@ -133,20 +137,24 @@ def printResults(resultDict):
         for backend in resultDict[file]:
             if backend == '__time':
                 continue
-
             PST = resultDict[file][backend][2]
             TVD = resultDict[file][backend][3]
-            IST = resultDict[file][backend][4]
-            Entropy = resultDict[file][backend][5]
-            swapCount = resultDict[file][backend][6]
-            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}".format(
-                backend, PST, TVD, IST, Entropy, swapCount))
+            Entropy = resultDict[file][backend][4]
+            swapCount = resultDict[file][backend][5]
+            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}".format(
+                backend, PST, TVD, Entropy, swapCount))
 
 
 def main():
     if len(sys.argv) == 1:
         print("Usage: {} file.qasm".format(sys.argv[0]))
         return 1
+
+    inputFile = sys.argv[1]
+
+    #Read in given circuit
+    qc = QuantumCircuit.from_qasm_file(inputFile)
+    qc.name = inputFile
 
     backendsIBMQ = None
     TOKEN_FILE = os.environ.get('IBMQ_TOKEN')
@@ -172,20 +180,21 @@ def main():
         #print(backends[0].configuration().backend_name)
 
     else:
-        backends = [
-            FakeArmonk(),
-            FakeBelem(),
-            FakeBogota(),
-            FakeManila(),
-            FakeQuito(),
-            FakeSantiago()
-        ]
+        backends = []
+        import inspect
+        for name,obj in inspect.getmembers(BE):
+            if "Legacy" not in name and "Alternative" not in name and "Fake" in name:
+                backends.append(obj())
 
-    inputFile = sys.argv[1]
+        backends = list(filter(lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
 
-    #Read in given circuit
-    qc = QuantumCircuit.from_qasm_file(inputFile)
-    qc.name = inputFile
+        #Only using first 10 backends to speed up testing
+        backends = backends[:10]
+
+    #for b in backends:
+    #    print(b.configuration().backend_name)
+    #return
+
 
     #Simulate circuit on each backend
     timeBegin = time.time_ns()
@@ -193,9 +202,6 @@ def main():
     resultDict = {}
     if backendsIBMQ == None:
         for backend in backends:
-            if backend.configuration().n_qubits < qc.num_qubits:
-                continue
-
             simCircuit(resultDict, qc, backend)
     else:
         for backend in backendsIBMQ:
