@@ -74,6 +74,8 @@ def simCircuit(resultDict, qc, backend):
 
     Entropy = EM.Compute_Entropy(dict_in=noisy_result.get_counts())
 
+    Fitness = fitness(PST, TVD, Entropy, swapCount)
+
     if qc.name not in resultDict:
         resultDict[qc.name] = {}
 
@@ -81,7 +83,7 @@ def simCircuit(resultDict, qc, backend):
         resultDict[qc.name][backendName] = {}
 
     resultDict[qc.name][backendName] = [
-        ideal_result, noisy_result, PST, TVD, Entropy, swapCount]
+        ideal_result, noisy_result, PST, TVD, Entropy, swapCount, Fitness]
 
 def simCircuitIBMQ(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
@@ -122,7 +124,8 @@ def printResults(resultDict):
         ("PST", 10),
         ("TVD", 10),
         ("Entropy", 10),
-        ("Swaps", 10)
+        ("Swaps", 10),
+        ("Fitness", 10)
     ]
 
     def printHeader(header):
@@ -141,9 +144,14 @@ def printResults(resultDict):
             TVD = resultDict[file][backend][3]
             Entropy = resultDict[file][backend][4]
             swapCount = resultDict[file][backend][5]
-            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}".format(
-                backend, PST, TVD, Entropy, swapCount))
+            Fitness = resultDict[file][backend][6]
+            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}".format(
+                backend, PST, TVD, Entropy, swapCount, Fitness))
 
+def fitness(PST,TVD,Entropy,Swaps):
+    fitness = 0
+    fitness = PST/(TVD+Entropy+Swaps)
+    return fitness
 
 def main():
     if len(sys.argv) == 1:
