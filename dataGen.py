@@ -5,7 +5,7 @@ import os
 import datetime
 from qiskit import QuantumCircuit, transpile
 from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates
-
+from MachineID import MachineDict
 from pandas import DataFrame
 
 GLOBAL_BASIS_GATES = None
@@ -15,6 +15,7 @@ def gen_data_entry(qc, backend):
     basisGates = backend.configuration().basis_gates
     coupling_map = backend.configuration().coupling_map
     numQubit = backend.configuration().n_qubits
+    name = backend.configuration().backend_name
 
     out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
 
@@ -24,10 +25,14 @@ def gen_data_entry(qc, backend):
         if gate not in dataEntry:
             dataEntry[gate] = -1
 
+    dataEntry["Machine"] = MachineDict[name]
     dataEntry["AvgDegree"] = getAverageDegree(coupling_map)
     dataEntry["NumQubit"] = numQubit
 
     outEntries = simCircuit(qc, backend)
+
+    if outEntries == None:
+        return None
 
     dataEntry['PST'] = outEntries[0]
     dataEntry['TVD'] = outEntries[1]
@@ -58,7 +63,9 @@ def main():
         backends = getFakeBackends(qc, n)
 
         for be in backends:
-            entries.append(gen_data_entry(qc, be))
+            e = gen_data_entry(qc, be)
+            if e != None:
+                entries.append(e)
 
     mergedDict = defaultdict(list)
     for d in entries:
@@ -67,7 +74,7 @@ def main():
 
     df = DataFrame.from_dict(mergedDict)
 
-    df.to_csv(ts+'_data.csv', index=False)
+    df.to_csv('./dataSets/' + ts + '_data.csv', index=False)
 
 
 if __name__ == "__main__":

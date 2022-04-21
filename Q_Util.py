@@ -1,5 +1,5 @@
 from turtle import back
-from qiskit import Aer, execute, transpile
+from qiskit import Aer, execute, transpile, transpiler
 from statistics import mean
 import Eval_Metrics as EM
 
@@ -86,8 +86,11 @@ def simCircuit(qc, backend):
     if "swap" not in basisGates:
         basisGates = basisGates + ["swap"]
 
-    swap_qc = transpile(qc, basis_gates=basisGates,
-                        optimization_level=0, backend=backend)
+    try:
+        swap_qc = transpile(qc, basis_gates=basisGates,
+                            optimization_level=0, backend=backend)
+    except transpiler.exceptions.TranspilerError: 
+        return None
 
     swapCount = getGateCounts(swap_qc, basisGates)['swap']
 
