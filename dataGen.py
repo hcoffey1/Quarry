@@ -1,26 +1,14 @@
 #Input: Gate counts, Average node degree
 #Output: PST, TVD, Entropy, Swaps
 from collections import defaultdict
-from operator import ge
-import tensorflow as tf
-import sys
-from qiskit import QuantumCircuit, Aer, execute, IBMQ, transpile
-from qiskit.providers.aer.noise import NoiseModel
-from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree
+import os
+import datetime
+from qiskit import QuantumCircuit, transpile
+from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates
 
 from pandas import DataFrame
 
 GLOBAL_BASIS_GATES = None
-
-
-def select_global_basis_gates(backends):
-    global GLOBAL_BASIS_GATES
-
-    tmp_gates = []
-    for be in backends:
-        tmp_gates += be.configuration().basis_gates
-
-    GLOBAL_BASIS_GATES = list(set(tmp_gates))
 
 
 def gen_data_entry(qc, backend):
@@ -35,7 +23,7 @@ def gen_data_entry(qc, backend):
     for gate in GLOBAL_BASIS_GATES:
         if gate not in dataEntry:
             dataEntry[gate] = -1
-    
+
     dataEntry["AvgDegree"] = getAverageDegree(coupling_map)
     dataEntry["NumQubit"] = numQubit
 
@@ -50,31 +38,37 @@ def gen_data_entry(qc, backend):
 
 
 def main():
-    if len(sys.argv) == 1:
-        print("Usage: {} file.qasm".format(sys.argv[0]))
-        return 1
+    global GLOBAL_BASIS_GATES
+    GLOBAL_BASIS_GATES = getGlobalBasisGates()
 
-    inputFile = sys.argv[1]
-
-    #Read in given circuit
-    qc = QuantumCircuit.from_qasm_file(inputFile)
-    qc.name = inputFile
-
-    n = 10
-    backends = getFakeBackends(qc, n)
-    select_global_basis_gates(backends)
-    print(GLOBAL_BASIS_GATES)
+    dtObj = datetime.datetime.now()
+    ts = "{}-{}-{}_{}:{}.{}".format(dtObj.year, dtObj.month,
+                                    dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
 
     entries = []
-    for be in backends:
-        entries.append(gen_data_entry(qc, be))
+    directory = "./qasm/Noise_Benchmarks/"
+    for inputFile in os.listdir(directory):
+        print("Running", inputFile, "...")
+
+        #Read in given circuit
+        qc = QuantumCircuit.from_qasm_file(directory+inputFile)
+        qc.name = inputFile
+
+        n = 1000
+        backends = getFakeBackends(qc, n)
+
+        for be in backends:
+            entries.append(gen_data_entry(qc, be))
 
     mergedDict = defaultdict(list)
     for d in entries:
         for key, value in d.items():
            mergedDict[key].append(value)
 
-    print(DataFrame.from_dict(mergedDict))
+    df = DataFrame.from_dict(mergedDict)
+
+    df.to_csv(ts+'_data.csv', index=False)
+
 
 if __name__ == "__main__":
 	main()

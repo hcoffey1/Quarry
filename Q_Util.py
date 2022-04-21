@@ -1,3 +1,4 @@
+from turtle import back
 from qiskit import Aer, execute, transpile
 from statistics import mean
 import Eval_Metrics as EM
@@ -108,10 +109,8 @@ def simCircuit(qc, backend):
     return [PST, TVD, Entropy, swapCount, Fitness]
 
 
-def getFakeBackends(qc, n):
+def extractBackends():
     backends = []
-    lb = qc.num_qubits
-
     import inspect
     for name, obj in inspect.getmembers(BE):
         if "Legacy" not in name \
@@ -120,9 +119,22 @@ def getFakeBackends(qc, n):
                 and "Fake" in name:
             backends.append(obj())
 
+    return backends
+
+
+def getGlobalBasisGates():
+    tmp_gates = []
+    for be in extractBackends():
+        tmp_gates += be.configuration().basis_gates
+
+    return list(set(tmp_gates))
+
+
+def getFakeBackends(qc, n):
     #Filter out backends with too few qubits for circuit
+    lb = qc.num_qubits
     backends = list(
-        filter(lambda backend: backend.configuration().n_qubits >= lb, backends))
+        filter(lambda backend: backend.configuration().n_qubits >= lb, extractBackends()))
 
     #Sort backends by qubit count
     backends = list(sorted(backends, key=lambda i: i.configuration().n_qubits))
