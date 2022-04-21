@@ -6,7 +6,7 @@ import tensorflow as tf
 import sys
 from qiskit import QuantumCircuit, Aer, execute, IBMQ, transpile
 from qiskit.providers.aer.noise import NoiseModel
-from Q_Util import simCircuit, getFakeBackends, getGateCounts
+from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree
 
 from pandas import DataFrame
 
@@ -25,6 +25,8 @@ def select_global_basis_gates(backends):
 
 def gen_data_entry(qc, backend):
     basisGates = backend.configuration().basis_gates
+    coupling_map = backend.configuration().coupling_map
+    numQubit = backend.configuration().n_qubits
 
     out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
 
@@ -33,6 +35,9 @@ def gen_data_entry(qc, backend):
     for gate in GLOBAL_BASIS_GATES:
         if gate not in dataEntry:
             dataEntry[gate] = -1
+    
+    dataEntry["AvgDegree"] = getAverageDegree(coupling_map)
+    dataEntry["NumQubit"] = numQubit
 
     outEntries = simCircuit(qc, backend)
 

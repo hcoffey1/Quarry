@@ -26,7 +26,6 @@ def fitness(PST, TVD, Entropy, Swaps):
 
 
 def getMaxQubit(cm):
-    maxQubit = 0
     maxX = (sorted(cm, key=lambda x: x[0], reverse=True)[0][0])
     maxY = (sorted(cm, key=lambda x: x[1], reverse=True)[1][1])
     return max(maxX, maxY)
