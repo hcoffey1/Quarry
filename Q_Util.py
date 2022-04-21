@@ -111,6 +111,8 @@ def simCircuit(qc, backend):
 
 def getFakeBackends(qc, n):
     backends = []
+    lb = qc.num_qubits
+
     import inspect
     for name, obj in inspect.getmembers(BE):
         if "Legacy" not in name \
@@ -119,10 +121,13 @@ def getFakeBackends(qc, n):
                 and "Fake" in name:
             backends.append(obj())
 
-    backends = list(filter(
-        lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
+    #Filter out backends with too few qubits for circuit
+    backends = list(
+        filter(lambda backend: backend.configuration().n_qubits >= lb, backends))
 
-    #Only using first n backends to speed up testing
+    #Sort backends by qubit count
+    backends = list(sorted(backends, key=lambda i: i.configuration().n_qubits))
+
+    #Return first n backends
     backends = backends[:n]
-
     return backends
