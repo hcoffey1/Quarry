@@ -42,16 +42,8 @@ def gen_data_entry(qc, backend):
     return dataEntry
 
 
-def main():
-    global GLOBAL_BASIS_GATES
-    GLOBAL_BASIS_GATES = getGlobalBasisGates()
-
-    dtObj = datetime.datetime.now()
-    ts = "{}-{}-{}_{}:{}.{}".format(dtObj.year, dtObj.month,
-                                    dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
-
+def createDataSet(directory, outputFile):
     entries = []
-    directory = "./qasm/Noise_Benchmarks/"
     for inputFile in os.listdir(directory):
         print("Running", inputFile, "...")
 
@@ -74,7 +66,30 @@ def main():
 
     df = DataFrame.from_dict(mergedDict)
 
-    df.to_csv('./dataSets/' + ts + '_data.csv', index=False)
+    df.to_csv(outputFile, index=False)
+
+
+def getTS():
+    dtObj = datetime.datetime.now()
+    ts = "{}-{:02d}-{:02d}_{:02d}:{:02d}.{:02d}".format(dtObj.year, dtObj.month,
+                                    dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
+
+    return ts
+
+
+def main():
+    global GLOBAL_BASIS_GATES
+    GLOBAL_BASIS_GATES = getGlobalBasisGates()
+
+    ts = getTS()
+    directory = "./qasm/Noise_Benchmarks/"
+    outFile = './dataSets_Noise/' + ts + '_data.csv'
+    createDataSet(directory, outFile)
+
+    #ts = getTS()
+    #directory = "./qasm/SWAP_Benchmarks/"
+    #outFile = './dataSets_SWAP/' + ts + '_data.csv'
+    #createDataSet(directory, outFile)
 
 
 if __name__ == "__main__":

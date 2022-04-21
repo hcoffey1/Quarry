@@ -7,7 +7,7 @@ import Eval_Metrics as EM
 import qiskit.test.mock.backends as BE
 
 #0: Use all available cores
-MAX_JOBS = 0
+MAX_JOBS = 24 
 
 
 def fitness(PST, TVD, Entropy, Swaps):
