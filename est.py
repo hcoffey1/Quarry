@@ -197,20 +197,23 @@ def main():
     else:
         backends = []
         import inspect
-        for name,obj in inspect.getmembers(BE):
-            if "Legacy" not in name and "Alternative" not in name and "Fake" in name:
+        for name, obj in inspect.getmembers(BE):
+            if "Legacy" not in name \
+                    and "Alternative" not in name \
+                    and "V2" not in name \
+                    and "Fake" in name:
                 backends.append(obj())
 
-        backends = list(filter(lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
+        backends = list(filter(
+            lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
 
         #Only using first n backends to speed up testing
         n = 3
         backends = backends[:n]
 
     #for b in backends:
-    #    print(b.configuration().backend_name)
+        #print(b.configuration().backend_name)
     #return
-
 
     #Simulate circuit on each backend
     timeBegin = time.time_ns()
@@ -226,10 +229,10 @@ def main():
 
             simCircuitIBMQ(resultDict, qc, backend)
 
-
     timeEnd = time.time_ns()
 
-    resultDict[qc.name] = sorted(resultDict[qc.name], key=lambda i: i[1][4], reverse=True)
+    resultDict[qc.name] = sorted(
+        resultDict[qc.name], key=lambda i: i[1][4], reverse=True)
 
     #Time taken to simulate
     execTime = timeEnd - timeBegin
