@@ -123,7 +123,8 @@ def main():
         #print(backends[0].configuration().backend_name)
 
     else:
-        backends = getFakeBackends(qc)
+        n = 10
+        backends = getFakeBackends(qc, n)
 
     #for b in backends:
         #print(b.configuration().backend_name)

@@ -109,7 +109,7 @@ def simCircuit(qc, backend):
     return [PST, TVD, Entropy, swapCount, Fitness]
 
 
-def getFakeBackends(qc):
+def getFakeBackends(qc, n):
     backends = []
     import inspect
     for name, obj in inspect.getmembers(BE):
@@ -123,7 +123,6 @@ def getFakeBackends(qc):
         lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
 
     #Only using first n backends to speed up testing
-    n = 10
     backends = backends[:n]
 
     return backends
