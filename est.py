@@ -8,10 +8,7 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
 import Eval_Metrics as EM
 
-from Q_Util import simCircuit
-
-#Mockup backends
-import qiskit.test.mock.backends as BE
+from Q_Util import simCircuit, getFakeBackends
 
 
 def evalCircuit(resultDict, qc, backend):
@@ -26,7 +23,7 @@ def evalCircuit(resultDict, qc, backend):
 
 
 def simCircuitIBMQ(resultDict, qc, backend):
-    '''Run circuit on simulated backend and collect result metrics'''
+    '''Run circuit on simulated backend and collect result metrics, TODO: Update this to work with new framework'''
 
     backendName = backend.configuration().backend_name
     nm = NoiseModel.from_backend(backend)
@@ -126,21 +123,7 @@ def main():
         #print(backends[0].configuration().backend_name)
 
     else:
-        backends = []
-        import inspect
-        for name, obj in inspect.getmembers(BE):
-            if "Legacy" not in name \
-                    and "Alternative" not in name \
-                    and "V2" not in name \
-                    and "Fake" in name:
-                backends.append(obj())
-
-        backends = list(filter(
-            lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
-
-        #Only using first n backends to speed up testing
-        n = 10
-        backends = backends[:n]
+        backends = getFakeBackends(qc)
 
     #for b in backends:
         #print(b.configuration().backend_name)

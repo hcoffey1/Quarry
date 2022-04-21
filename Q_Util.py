@@ -1,12 +1,15 @@
-from qiskit import QuantumCircuit, Aer, execute, IBMQ, transpile
-from qiskit.providers.aer.noise import NoiseModel
+from qiskit import Aer, execute, transpile
 from statistics import mean
 import Eval_Metrics as EM
 
-#0: Use all available cores
-MAX_JOBS=0
+#Mockup backends
+import qiskit.test.mock.backends as BE
 
-def fitness(PST,TVD,Entropy,Swaps):
+#0: Use all available cores
+MAX_JOBS = 0
+
+
+def fitness(PST, TVD, Entropy, Swaps):
     a = 1
     b = 1
     c = 1
@@ -21,11 +24,13 @@ def fitness(PST,TVD,Entropy,Swaps):
 
     return fitness
 
+
 def getMaxQubit(cm):
     maxQubit = 0
     maxX = (sorted(cm, key=lambda x: x[0], reverse=True)[0][0])
     maxY = (sorted(cm, key=lambda x: x[1], reverse=True)[1][1])
     return max(maxX, maxY)
+
 
 def getAverageDegree(cm):
     maxQubit = getMaxQubit(cm)
@@ -36,7 +41,8 @@ def getAverageDegree(cm):
         counts[e[0]] += 1
         counts[e[1]] += 1
 
-    return mean(counts) 
+    return mean(counts)
+
 
 def getGateCounts(qc, basisGates):
     """Get counts of each gate type in the given circuit"""
@@ -45,7 +51,7 @@ def getGateCounts(qc, basisGates):
 
     for g in basisGates:
         gateCounts[g] = 0
-    
+
     gateCounts["measure"] = 0
 
     qasm = qc.qasm()
@@ -59,7 +65,7 @@ def getGateCounts(qc, basisGates):
                 or "qreg" in l \
                 or "creg" in l \
                 or "include" in l:
-                    continue
+            continue
         gate = l.split()[0].split('(')[0]
         if gate not in gateCounts:
             print("Unhandled instruction: ", l)
@@ -68,6 +74,7 @@ def getGateCounts(qc, basisGates):
         gateCounts[gate] += 1
 
     return gateCounts
+
 
 def simCircuit(qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
@@ -79,13 +86,15 @@ def simCircuit(qc, backend):
     if "swap" not in basisGates:
         basisGates = basisGates + ["swap"]
 
-    swap_qc = transpile(qc, basis_gates=basisGates, optimization_level=0, backend=backend)
+    swap_qc = transpile(qc, basis_gates=basisGates,
+                        optimization_level=0, backend=backend)
 
     swapCount = getGateCounts(swap_qc, basisGates)['swap']
 
     ideal_result = execute(
         qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()
-    noisy_result = execute(qc, backend=backend, max_parallel_threads=MAX_JOBS).result()
+    noisy_result = execute(qc, backend=backend,
+                           max_parallel_threads=MAX_JOBS).result()
 
     PST = EM.Compute_PST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
@@ -98,3 +107,23 @@ def simCircuit(qc, backend):
     Fitness = fitness(PST, TVD, Entropy, swapCount)
 
     return [PST, TVD, Entropy, swapCount, Fitness]
+
+
+def getFakeBackends(qc):
+    backends = []
+    import inspect
+    for name, obj in inspect.getmembers(BE):
+        if "Legacy" not in name \
+                and "Alternative" not in name \
+                and "V2" not in name \
+                and "Fake" in name:
+            backends.append(obj())
+
+    backends = list(filter(
+        lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
+
+    #Only using first n backends to speed up testing
+    n = 10
+    backends = backends[:n]
+
+    return backends
