@@ -77,13 +77,10 @@ def simCircuit(resultDict, qc, backend):
     Fitness = fitness(PST, TVD, Entropy, swapCount)
 
     if qc.name not in resultDict:
-        resultDict[qc.name] = {}
+        resultDict[qc.name] = []
 
-    if backendName not in resultDict[qc.name]:
-        resultDict[qc.name][backendName] = {}
-
-    resultDict[qc.name][backendName] = [
-        ideal_result, noisy_result, PST, TVD, Entropy, swapCount, Fitness]
+    resultDict[qc.name].append([backendName, [
+        PST, TVD, Entropy, swapCount, Fitness]])
 
 def simCircuitIBMQ(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
@@ -116,7 +113,7 @@ def simCircuitIBMQ(resultDict, qc, backend):
         ideal_result, noisy_result, PST, TVD, IST, Entropy]
 
 
-def printResults(resultDict):
+def printResults(resultDict, execTime):
     '''Prints metrics per backend on each circuit'''
 
     header = [
@@ -135,22 +132,32 @@ def printResults(resultDict):
 
     for file in resultDict.keys():
         print("{} {:.6f}(s) {}".format(
-            file, resultDict[file]['__time']/(10**9), '++++++++++++++'))
+            file, execTime/(10**9), '++++++++++++++'))
         printHeader(header)
-        for backend in resultDict[file]:
-            if backend == '__time':
-                continue
-            PST = resultDict[file][backend][2]
-            TVD = resultDict[file][backend][3]
-            Entropy = resultDict[file][backend][4]
-            swapCount = resultDict[file][backend][5]
-            Fitness = resultDict[file][backend][6]
+
+        for i in range(len(resultDict[file])):
+            backend = resultDict[file][i][0]
+            PST = resultDict[file][i][1][0]
+            TVD = resultDict[file][i][1][1]
+            Entropy = resultDict[file][i][1][2]
+            swapCount = resultDict[file][i][1][3]
+            Fitness = resultDict[file][i][1][4]
             print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}".format(
                 backend, PST, TVD, Entropy, swapCount, Fitness))
 
 def fitness(PST,TVD,Entropy,Swaps):
+    a = 1
+    b = 1
+    c = 1
+    d = 1.0/10
     fitness = 0
-    fitness = PST/(TVD+Entropy+Swaps)
+
+    X = PST*a
+    Y = (TVD*b+Entropy*c+Swaps*d)
+
+    if Y != 0:
+        fitness = X/Y
+
     return fitness
 
 def main():
@@ -196,8 +203,9 @@ def main():
 
         backends = list(filter(lambda backend: backend.configuration().n_qubits >= qc.num_qubits, backends))
 
-        #Only using first 10 backends to speed up testing
-        backends = backends[:10]
+        #Only using first n backends to speed up testing
+        n = 3
+        backends = backends[:n]
 
     #for b in backends:
     #    print(b.configuration().backend_name)
@@ -221,11 +229,13 @@ def main():
 
     timeEnd = time.time_ns()
 
+    resultDict[qc.name] = sorted(resultDict[qc.name], key=lambda i: i[1][4], reverse=True)
+
     #Time taken to simulate
-    resultDict[qc.name]['__time'] = timeEnd - timeBegin
+    execTime = timeEnd - timeBegin
 
     #Output
-    printResults(resultDict)
+    printResults(resultDict, execTime)
 
 
 if __name__ == "__main__":
