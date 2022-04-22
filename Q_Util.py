@@ -13,7 +13,7 @@ MAX_JOBS = 24
 def fitness(PST, TVD, Entropy, Swaps):
     a = 1
     b = 1
-    c = 1
+    c = 1.0/10
     d = 1.0/10
     fitness = 0
 
