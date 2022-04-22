@@ -1,0 +1,3 @@
+[submodule "qasm/QASMBench"]
+	path = qasm/QASMBench
+	url = git@github.com:hcoffey1/QASMBench.git
