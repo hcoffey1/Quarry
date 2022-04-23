@@ -71,7 +71,7 @@ def createDataSet(directory, outputFile):
 
 def getTS():
     dtObj = datetime.datetime.now()
-    ts = "{}-{:02d}-{:02d}_{:02d}:{:02d}.{:02d}".format(dtObj.year, dtObj.month,
+    ts = "{}-{:02d}-{:02d}--{:02d}-{:02d}-{:02d}".format(dtObj.year, dtObj.month,
                                     dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
 
     return ts
