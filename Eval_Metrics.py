@@ -1,6 +1,4 @@
-#From Dr. Swamit Tannu's assignment
 import numpy as np
-
 
 from collections import Counter
 def removekey(d, key_list):
@@ -74,6 +72,64 @@ def Compute_TVD(dict_in,dict_ideal):
     soad = sum(list_of_absdiff)    
 
     return soad/2
+
+def Compute_L2(dict_in,dict_ideal):
+    
+    dict_in = normalize_dict(dict_in)
+    dict_ideal=normalize_dict(dict_ideal)
+    epsilon = 0.00000000001
+    _in1 = Counter(dict_in.copy())
+    _in2 = Counter(dict_ideal.copy())
+    a = Counter(dict.fromkeys(dict_in, epsilon))
+    b = Counter(dict.fromkeys(dict_ideal, epsilon))
+
+    p = dict(Counter(_in1) + Counter(b))
+    q = dict(Counter(_in2) + Counter(a))
+    p=list(dict(sorted(p.items())).values())
+    q=list(dict(sorted(q.items())).values())
+
+    list_of_absdiff = []
+    for p_i, q_i in zip(p, q):
+
+        # caluclate the square of the difference of ith distr elements
+        s = np.square(p_i - q_i)
+
+        # append 
+        list_of_absdiff.append(s)
+
+    # calculate sum of squares
+    soad = sum(list_of_absdiff)    
+
+    return np.sqrt(soad)
+
+def Compute_Hellinger(dict_in,dict_ideal):
+    
+    dict_in = normalize_dict(dict_in)
+    dict_ideal=normalize_dict(dict_ideal)
+    epsilon = 0.00000000001
+    _in1 = Counter(dict_in.copy())
+    _in2 = Counter(dict_ideal.copy())
+    a = Counter(dict.fromkeys(dict_in, epsilon))
+    b = Counter(dict.fromkeys(dict_ideal, epsilon))
+
+    p = dict(Counter(_in1) + Counter(b))
+    q = dict(Counter(_in2) + Counter(a))
+    p=list(dict(sorted(p.items())).values())
+    q=list(dict(sorted(q.items())).values())
+
+    list_of_absdiff = []
+    for p_i, q_i in zip(p, q):
+
+        # caluclate the square of the difference of ith distr elements
+        s = np.square(np.sqrt(p_i) - np.sqrt(q_i))
+
+        # append 
+        list_of_absdiff.append(s)
+
+    # calculate sum of squares
+    soad = sum(list_of_absdiff)    
+
+    return np.sqrt(soad)
 
 
 def Compute_Entropy(dict_in):
