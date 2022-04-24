@@ -1,6 +1,28 @@
 import numpy as np
 
 from collections import Counter
+
+def fitness(PST, TVD, Entropy, Swaps, Hellinger, L2):
+    a = 1
+    b = 1
+    c = 1.0/10
+    d = 1.0/10
+    e = 1
+    f = 1
+
+    X = PST*a
+    Y = (TVD*b
+         + Entropy*c
+         + Swaps*d
+         + Hellinger*e
+         + L2*f)
+
+    fitness = 0
+    if Y != 0:
+        fitness = X/Y
+
+    return fitness
+
 def removekey(d, key_list):
     for i in key_list:
         r = dict(d)

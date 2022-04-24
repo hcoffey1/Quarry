@@ -60,7 +60,6 @@ def createDataSet(directory, outputFile):
             e = gen_data_entry(qc, be)
             if e != None:
                 entries.append(e)
-            break
 
     mergedDict = defaultdict(list)
     for d in entries:

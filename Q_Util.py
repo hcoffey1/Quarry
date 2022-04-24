@@ -7,23 +7,7 @@ import Eval_Metrics as EM
 import qiskit.test.mock.backends as BE
 
 #0: Use all available cores
-MAX_JOBS = 24 
-
-
-def fitness(PST, TVD, Entropy, Swaps):
-    a = 1
-    b = 1
-    c = 1.0/10
-    d = 1.0/10
-    fitness = 0
-
-    X = PST*a
-    Y = (TVD*b+Entropy*c+Swaps*d)
-
-    if Y != 0:
-        fitness = X/Y
-
-    return fitness
+MAX_JOBS = 24
 
 
 def getMaxQubit(cm):
@@ -89,7 +73,7 @@ def simCircuit(qc, backend):
     try:
         swap_qc = transpile(qc, basis_gates=basisGates,
                             optimization_level=0, backend=backend)
-    except transpiler.exceptions.TranspilerError: 
+    except transpiler.exceptions.TranspilerError:
         return None
 
     swapCount = getGateCounts(swap_qc, basisGates)['swap']
@@ -108,9 +92,10 @@ def simCircuit(qc, backend):
     Entropy = EM.Compute_Entropy(dict_in=noisy_result.get_counts())
 
     L2 = EM.Compute_L2(noisy_result.get_counts(), ideal_result.get_counts())
-    Hellinger = EM.Compute_Hellinger(noisy_result.get_counts(), ideal_result.get_counts())
+    Hellinger = EM.Compute_Hellinger(
+        noisy_result.get_counts(), ideal_result.get_counts())
 
-    Fitness = fitness(PST, TVD, Entropy, swapCount)
+    Fitness = EM.fitness(PST, TVD, Entropy, swapCount, Hellinger, L2)
 
     return [PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness]
 
