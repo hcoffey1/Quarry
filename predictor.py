@@ -25,7 +25,7 @@ from os.path import isfile, join
 
 out_columns = ['PST', 'TVD', 'Entropy', 'Swaps']
 
-dataset_path = "./dataSets_Noise"
+dataset_path = "./dataSets_V1/dataSets_Noise"
 files = [join(dataset_path, f) for f in listdir(dataset_path) if isfile(join(dataset_path, f))]
 
 dfs = [pd.read_csv(f) for f in files]

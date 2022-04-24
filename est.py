@@ -63,6 +63,8 @@ def printResults(resultDict, execTime):
         ("TVD", 10),
         ("Entropy", 10),
         ("Swaps", 10),
+        ("L2", 10),
+        ("Hellinger", 10),
         ("Fitness", 10)
     ]
 
@@ -82,9 +84,11 @@ def printResults(resultDict, execTime):
             TVD = resultDict[file][i][1][1]
             Entropy = resultDict[file][i][1][2]
             swapCount = resultDict[file][i][1][3]
-            Fitness = resultDict[file][i][1][4]
-            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}".format(
-                backend, PST, TVD, Entropy, swapCount, Fitness))
+            L2 = resultDict[file][i][1][4]
+            Hellinger = resultDict[file][i][1][5]
+            Fitness = resultDict[file][i][1][6]
+            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}{:<10.3f}{:<10.3f}".format(
+                backend, PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness))
 
 
 def main():
@@ -147,7 +151,7 @@ def main():
     timeEnd = time.time_ns()
 
     resultDict[qc.name] = sorted(
-        resultDict[qc.name], key=lambda i: i[1][4], reverse=True)
+        resultDict[qc.name], key=lambda i: i[1][6], reverse=True)
 
     #Time taken to simulate
     execTime = timeEnd - timeBegin

@@ -107,9 +107,12 @@ def simCircuit(qc, backend):
 
     Entropy = EM.Compute_Entropy(dict_in=noisy_result.get_counts())
 
+    L2 = EM.Compute_L2(noisy_result.get_counts(), ideal_result.get_counts())
+    Hellinger = EM.Compute_Hellinger(noisy_result.get_counts(), ideal_result.get_counts())
+
     Fitness = fitness(PST, TVD, Entropy, swapCount)
 
-    return [PST, TVD, Entropy, swapCount, Fitness]
+    return [PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness]
 
 
 def extractBackends():

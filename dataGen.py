@@ -38,6 +38,8 @@ def gen_data_entry(qc, backend):
     dataEntry['TVD'] = outEntries[1]
     dataEntry['Entropy'] = outEntries[2]
     dataEntry['Swaps'] = outEntries[3]
+    dataEntry['L2'] = outEntries[4]
+    dataEntry['Hellinger'] = outEntries[5]
 
     return dataEntry
 
@@ -58,6 +60,7 @@ def createDataSet(directory, outputFile):
             e = gen_data_entry(qc, be)
             if e != None:
                 entries.append(e)
+            break
 
     mergedDict = defaultdict(list)
     for d in entries:
@@ -83,7 +86,7 @@ def main():
 
     ts = getTS()
     directory = "./qasm/Noise_Benchmarks/"
-    outFile = './dataSets_Noise/' + ts + '_data.csv'
+    outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
     #ts = getTS()
