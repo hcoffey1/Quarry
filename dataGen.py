@@ -8,6 +8,8 @@ from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree,
 from MachineID import MachineDict
 from pandas import DataFrame
 
+import qasm.QASMBench.metrics.OpenQASMetric as QB
+
 GLOBAL_BASIS_GATES = None
 
 
@@ -28,6 +30,11 @@ def gen_data_entry(qc, backend):
     dataEntry["Machine"] = MachineDict[name]
     dataEntry["AvgDegree"] = getAverageDegree(coupling_map)
     dataEntry["NumQubit"] = numQubit
+    dataEntry["Depth"] = out_qc.depth()
+
+    #Collect metrics from QASMBench
+    QB_metric = QB.QASMetric(out_qc.qasm())
+    dataEntry = {**dataEntry, **(QB_metric.evaluate_qasm())}
 
     outEntries = simCircuit(qc, backend)
 
