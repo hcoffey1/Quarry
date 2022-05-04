@@ -1,12 +1,19 @@
 from qiskit import Aer, execute, transpile, transpiler 
 from statistics import mean
 import Eval_Metrics as EM
+import datetime
 
 #Mockup backends
 import qiskit.test.mock.backends as BE
 
 #0: Use all available cores
 MAX_JOBS = 24
+
+def getTS():
+    dtObj = datetime.datetime.now()
+    ts = "{}-{:02d}-{:02d}--{:02d}-{:02d}-{:02d}".format(dtObj.year, dtObj.month,
+                                    dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
+    return ts
 
 
 def getMaxQubit(cm):

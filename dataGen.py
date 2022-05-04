@@ -2,9 +2,8 @@
 #Output: PST, TVD, Entropy, Swaps
 from collections import defaultdict
 import os
-import datetime
 from qiskit import QuantumCircuit, transpile
-from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates
+from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS
 from MachineID import MachineDict
 from pandas import DataFrame
 
@@ -76,14 +75,6 @@ def createDataSet(directory, outputFile):
     df = DataFrame.from_dict(mergedDict)
 
     df.to_csv(outputFile, index=False)
-
-
-def getTS():
-    dtObj = datetime.datetime.now()
-    ts = "{}-{:02d}-{:02d}--{:02d}-{:02d}-{:02d}".format(dtObj.year, dtObj.month,
-                                    dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
-
-    return ts
 
 
 def main():
