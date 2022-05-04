@@ -1,5 +1,4 @@
-from turtle import back
-from qiskit import Aer, execute, transpile, transpiler
+from qiskit import Aer, execute, transpile, transpiler 
 from statistics import mean
 import Eval_Metrics as EM
 

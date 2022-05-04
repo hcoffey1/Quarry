@@ -8,10 +8,10 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
 import Eval_Metrics as EM
 
-from Q_Util import simCircuit, getFakeBackends
+from Q_Util import simCircuit, getFakeBackends, MAX_JOBS
 
 
-def evalCircuit(resultDict, qc, backend):
+def evalCircuitSim(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
 
     backendName = backend.configuration().backend_name
@@ -19,7 +19,25 @@ def evalCircuit(resultDict, qc, backend):
     if qc.name not in resultDict:
         resultDict[qc.name] = []
 
+    print(backendName, backend.configuration().n_qubits)
     resultDict[qc.name].append([backendName, simCircuit(qc, backend)])
+
+
+def evalCircuitESP(resultDict, qc, backend):
+    '''Estimate circuit fidelity via ESP'''
+
+    backendName = backend.configuration().backend_name
+    basisGates = backend.configuration().basis_gates
+
+    if qc.name not in resultDict:
+        resultDict[qc.name] = []
+
+    print(backendName, backend.configuration().n_qubits)
+    unroll_qc = transpile(qc, basis_gates=basisGates,
+                          optimization_level=0, backend=backend)
+
+    esp = EM.get_ESP(unroll_qc, NoiseModel.from_backend(backend))
+    resultDict[qc.name].append([backendName, esp])
 
 
 def simCircuitIBMQ(resultDict, qc, backend):
@@ -54,7 +72,32 @@ def simCircuitIBMQ(resultDict, qc, backend):
         ideal_result, noisy_result, PST, TVD, IST, Entropy]
 
 
-def printResults(resultDict, execTime):
+def printResultsESP(resultDict, execTime):
+    '''Prints metrics per backend on each circuit'''
+
+    header = [
+        ("Backend Name", 20),
+        ("ESP", 10)
+    ]
+
+    def printHeader(header):
+        for h in header:
+            print("{h:{field_size}}".format(h=h[0], field_size=h[1]), end='')
+        print('')
+
+    for file in resultDict.keys():
+        print("{} {:.6f}(s) {}".format(
+            file, execTime/(10**9), '++++++++++++++'))
+        printHeader(header)
+
+        for i in range(len(resultDict[file])):
+            backend = resultDict[file][i][0]
+            ESP = resultDict[file][i][1]
+            print("{:20}{:<10.3f}".format(
+                backend, ESP))
+
+
+def printResultsSim(resultDict, execTime):
     '''Prints metrics per backend on each circuit'''
 
     header = [
@@ -118,46 +161,43 @@ def main():
             lambda backend: "simulator" not in backend.configuration().backend_name, backendsIBMQ))
         print("Done")
 
-        #For writing noise models out to compare
-        #nm = NoiseModel.from_backend(backends[0])
-        #nm = NoiseModel.from_backend(FakeArmonk())
-        #with open("armonk_04_18_22", 'w') as f:
-        #    f.write(json.dumps(nm.to_dict()))
-        #print(nm.to_dict())
-        #print(backends[0].configuration().backend_name)
-
     else:
         n = 10
         backends = getFakeBackends(qc, n)
 
-    #for b in backends:
-        #print(b.configuration().backend_name)
-    #return
-
     #Simulate circuit on each backend
     timeBegin = time.time_ns()
 
-    resultDict = {}
-    if backendsIBMQ == None:
-        for backend in backends:
-            evalCircuit(resultDict, qc, backend)
-    else:
-        for backend in backendsIBMQ:
-            if backend.configuration().n_qubits < qc.num_qubits:
-                continue
-
-            simCircuitIBMQ(resultDict, qc, backend)
-
+    resultDictSim = {}
+    for backend in backends:
+        evalCircuitSim(resultDictSim, qc, backend)
     timeEnd = time.time_ns()
 
-    resultDict[qc.name] = sorted(
-        resultDict[qc.name], key=lambda i: i[1][6], reverse=True)
+    resultDictSim[qc.name] = sorted(
+        resultDictSim[qc.name], key=lambda i: i[1][6], reverse=True)
 
     #Time taken to simulate
     execTime = timeEnd - timeBegin
 
     #Output
-    printResults(resultDict, execTime)
+    printResultsSim(resultDictSim, execTime)
+
+    timeBegin = time.time_ns()
+
+    #Estimate circuit on each backend with ESP
+    resultDictESP = {}
+    for backend in backends:
+        evalCircuitESP(resultDictESP, qc, backend)
+    timeEnd = time.time_ns()
+
+    resultDictESP[qc.name] = sorted(
+        resultDictESP[qc.name], key=lambda i: i[1], reverse=True)
+
+    #Time taken
+    execTime = timeEnd - timeBegin
+
+    #Output
+    printResultsESP(resultDictESP, execTime)
 
 
 if __name__ == "__main__":
