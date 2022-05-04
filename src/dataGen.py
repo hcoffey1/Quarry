@@ -1,11 +1,19 @@
 #Input: Gate counts, Average node degree
 #Output: PST, TVD, Entropy, Swaps
+
 from collections import defaultdict
-import os
 from qiskit import QuantumCircuit, transpile
 from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS
 from MachineID import MachineDict
 from pandas import DataFrame
+
+import os
+import sys
+import inspect
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
 
 import qasm.QASMBench.metrics.OpenQASMetric as QB
 
