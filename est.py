@@ -1,4 +1,3 @@
-from ctypes.wintypes import MAX_PATH
 from qiskit import QuantumCircuit, Aer, execute, IBMQ
 import sys
 import time
