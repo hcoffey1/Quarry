@@ -3,10 +3,10 @@
 from collections import defaultdict
 from statistics import mean
 from qiskit import QuantumCircuit, transpile
-from QUtil import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS
 from MachineID import MachineDict
 from pandas import DataFrame
 from qiskit.providers.aer.noise import NoiseModel
+import QUtil
 
 import networkx
 
@@ -21,52 +21,53 @@ sys.path.insert(0, parentdir)
 import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 
-GLOBAL_BASIS_GATES = None
-
-
 def genDataEntry(qc, backend):
     basisGates = backend.configuration().basis_gates
     coupling_map = backend.configuration().coupling_map
     numQubit = backend.configuration().n_qubits
     name = backend.configuration().backend_name
+    noise = NoiseModel.from_backend(backend)
 
     #Counting gates prior to mapping to topology
     out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
 
-    dataEntry = getGateCounts(out_qc, basisGates)
+    dataEntry = QUtil.getGateCounts(out_qc, basisGates)
 
-    for gate in GLOBAL_BASIS_GATES:
+    for gate in QUtil.GLOBAL_BASIS_GATES:
         if gate not in dataEntry:
             dataEntry[gate] = -1
 
+    #Avg Error Metrics
+    dataEntry["measureSuccess"] = QUtil.getAvgMeasurementSuccess(noise)
+    dataEntry = {**dataEntry, **(QUtil.getAvgGateSuccess(noise))}
+
+    #Topology Metrics
     graph = networkx.DiGraph()
     graph.add_edges_from(coupling_map)
 
     dataEntry["Machine"] = MachineDict[name]
 
-    #Topology Metrics
     dataEntry["GraphDensity"] = networkx.density(graph)
-    dataEntry["AvgDegree"] = getAverageDegree(coupling_map)
+    dataEntry["AvgDegree"] = QUtil.getAverageDegree(coupling_map)
     dataEntry["AvgConnectivity"] = networkx.average_node_connectivity(graph)
     dataEntry["AvgNeighborDegree"] = mean(
         list(networkx.average_neighbor_degree(graph).values()))
     dataEntry["AvgClustering"] = networkx.average_clustering(graph)
     dataEntry["AvgShortestPath"] = networkx.average_shortest_path_length(graph)
 
-    #Avg Error Metrics
-
+    #Circuit Metrics
     dataEntry["NumQubit"] = numQubit
     dataEntry["Depth"] = out_qc.depth()
 
-    #Collect metrics from QASMBench
     QB_metric = QB.QASMetric(out_qc.qasm())
     dataEntry = {**dataEntry, **(QB_metric.evaluate_qasm())}
 
-    outEntries = simCircuit(qc, backend)
+    outEntries = QUtil.simCircuit(qc, backend)
 
     if outEntries == None:
         return None
 
+    #Output Metrics
     dataEntry['PST'] = outEntries[0]
     dataEntry['TVD'] = outEntries[1]
     dataEntry['Entropy'] = outEntries[2]
@@ -87,14 +88,12 @@ def createDataSet(directory, outputFile):
         qc.name = inputFile
 
         n = 1000
-        backends = getFakeBackends(qc, n)
+        backends = QUtil.getFakeBackends(qc, n)
 
         for be in backends:
             e = genDataEntry(qc, be)
             if e != None:
                 entries.append(e)
-
-        break
 
     mergedDict = defaultdict(list)
     for d in entries:
@@ -107,10 +106,9 @@ def createDataSet(directory, outputFile):
 
 
 def main():
-    global GLOBAL_BASIS_GATES
-    GLOBAL_BASIS_GATES = getGlobalBasisGates()
+    QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
-    ts = getTS()
+    ts = QUtil.getTS()
     directory = "./qasm/Noise_Benchmarks/"
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)

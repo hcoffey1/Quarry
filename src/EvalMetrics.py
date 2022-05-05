@@ -1,7 +1,4 @@
 import numpy as np
-from qiskit.providers.aer.noise import NoiseModel
-from qiskit import QuantumCircuit
-
 from collections import Counter
 
 
@@ -25,38 +22,6 @@ def fitness(PST, TVD, Entropy, Swaps, Hellinger, L2) -> float:
         fitness = X/Y
 
     return fitness
-
-
-def getESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
-    """
-    Estimated Success Probability
-    https://dl.acm.org/doi/abs/10.1145/3386162
-    """
-    esp = 1
-
-    for instruction, qargs, cargs in qc._data:
-        if instruction.name not in noise._noise_instructions:
-            continue
-
-        if len(qargs) > 1:
-            qb = str(qargs[0]._index)+','+str(qargs[1]._index)
-        else:
-            qb = str(qargs[0]._index)
-
-        if instruction.name == 'measure':
-            m0e = (noise._local_readout_errors[qb].probabilities[0][0])
-            m1e = (noise._local_readout_errors[qb].probabilities[1][1])
-            er = (m0e + m1e)/2
-        else:
-            #Assume that highest probability is for success
-            er = max(
-                noise._local_quantum_errors[instruction.name][qb].probabilities)
-        esp *= er
-
-    return esp
-
-def getAvgMeasurementError():
-    pass
 
 
 def _removekey(d, key_list):

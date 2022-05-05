@@ -1,4 +1,5 @@
 from qiskit import Aer, execute, transpile, transpiler, QuantumCircuit
+from qiskit.providers.aer.noise import NoiseModel
 from pandas import DataFrame
 from MachineID import MachineDict
 from statistics import mean
@@ -10,6 +11,74 @@ import qiskit.test.mock.backends as BE
 
 #0: Use all available cores
 MAX_JOBS = 24
+GLOBAL_BASIS_GATES = None
+
+
+def getAvgMeasurementSuccess(noise: NoiseModel) -> float:
+    sum = 0
+
+    readoutErrors = noise._local_readout_errors
+    if len(readoutErrors.keys()) == 0:
+        return 1
+
+    for qe in readoutErrors.values():
+        m0e = (qe.probabilities[0][0])
+        m1e = (qe.probabilities[1][1])
+        sr = (m0e + m1e)/2
+        sum += sr
+
+    return sum*1.0/len(readoutErrors.keys())
+
+
+def getAvgGateSuccess(noise: NoiseModel) -> dict:
+
+    gateSuccess = {}
+
+    for gate in GLOBAL_BASIS_GATES:
+        key = gate + "Success"
+
+        if gate not in noise._noise_instructions:
+            gateSuccess[key] = 1
+            continue
+
+        local_errors = noise._local_quantum_errors[gate]
+
+        gateSuccess[key] = 0
+        for qb in local_errors:
+            gateSuccess[key] += max(local_errors[qb].probabilities)
+
+        gateSuccess[key] /= len(local_errors.keys())
+
+    return gateSuccess
+
+
+def getESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
+    """
+    Estimated Success Probability
+    https://dl.acm.org/doi/abs/10.1145/3386162
+    """
+    esp = 1
+
+    for instruction, qargs, cargs in qc._data:
+        if instruction.name not in noise._noise_instructions:
+            continue
+
+        if len(qargs) > 1:
+            qb = str(qargs[0]._index)+','+str(qargs[1]._index)
+        else:
+            qb = str(qargs[0]._index)
+
+        if instruction.name == 'measure':
+            m0e = (noise._local_readout_errors[qb].probabilities[0][0])
+            m1e = (noise._local_readout_errors[qb].probabilities[1][1])
+            sr = (m0e + m1e)/2
+        else:
+            #Assume that highest probability is for success
+            sr = max(
+                noise._local_quantum_errors[instruction.name][qb].probabilities)
+        esp *= sr
+
+    return esp
 
 
 def getV1Input(qc: QuantumCircuit, backend) -> DataFrame:

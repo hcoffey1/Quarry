@@ -7,7 +7,7 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
 import EvalMetrics as EM
 
-from QUtil import simCircuit, getFakeBackends, MAX_JOBS
+from QUtil import simCircuit, getFakeBackends, MAX_JOBS, getESP
 
 
 def evalCircuitSim(resultDict, qc, backend):
@@ -35,7 +35,7 @@ def evalCircuitESP(resultDict, qc, backend):
     unroll_qc = transpile(qc, basis_gates=basisGates,
                           optimization_level=0, backend=backend)
 
-    esp = EM.getESP(unroll_qc, NoiseModel.from_backend(backend))
+    esp = getESP(unroll_qc, NoiseModel.from_backend(backend))
     resultDict[qc.name].append([backendName, esp])
 
 
