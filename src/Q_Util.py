@@ -1,4 +1,4 @@
-from qiskit import Aer, execute, transpile, transpiler 
+from qiskit import Aer, execute, transpile, transpiler
 from statistics import mean
 import Eval_Metrics as EM
 import datetime
@@ -9,29 +9,23 @@ import qiskit.test.mock.backends as BE
 #0: Use all available cores
 MAX_JOBS = 24
 
-def getTS():
+
+def getTS() -> str:
     dtObj = datetime.datetime.now()
     ts = "{}-{:02d}-{:02d}--{:02d}-{:02d}-{:02d}".format(dtObj.year, dtObj.month,
-                                    dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
+                                                         dtObj.day, dtObj.hour, dtObj.minute, dtObj.second)
     return ts
 
 
-def getMaxQubit(cm):
+def getMaxQubit(cm) -> int:
     maxX = (sorted(cm, key=lambda x: x[0], reverse=True)[0][0])
     maxY = (sorted(cm, key=lambda x: x[1], reverse=True)[1][1])
     return max(maxX, maxY)
 
 
-def getAverageDegree(cm):
+def getAverageDegree(cm) -> float:
     maxQubit = getMaxQubit(cm)
-
-    counts = [0] * (maxQubit+1)
-
-    for e in cm:
-        counts[e[0]] += 1
-        counts[e[1]] += 1
-
-    return mean(counts)
+    return len(cm)/(1.0*maxQubit+1)
 
 
 def getGateCounts(qc, basisGates):

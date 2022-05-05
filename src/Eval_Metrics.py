@@ -4,7 +4,8 @@ from qiskit import QuantumCircuit
 
 from collections import Counter
 
-def fitness(PST, TVD, Entropy, Swaps, Hellinger, L2):
+
+def fitness(PST, TVD, Entropy, Swaps, Hellinger, L2) -> float:
     a = 1
     b = 1
     c = 1.0/10
@@ -27,7 +28,9 @@ def fitness(PST, TVD, Entropy, Swaps, Hellinger, L2):
 
 #Estimated Success Probability
 #https://dl.acm.org/doi/abs/10.1145/3386162
-def get_ESP(qc : QuantumCircuit, noise : NoiseModel) -> float:
+
+
+def get_ESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
     esp = 1
 
     for instruction, qargs, cargs in qc._data:
@@ -45,58 +48,62 @@ def get_ESP(qc : QuantumCircuit, noise : NoiseModel) -> float:
             er = (m0e + m1e)/2
         else:
             #Assume that highest probability is for success
-            er = max(noise._local_quantum_errors[instruction.name][qb].probabilities)
+            er = max(
+                noise._local_quantum_errors[instruction.name][qb].probabilities)
         esp *= er
 
-    return esp 
+    return esp
+
 
 def removekey(d, key_list):
     for i in key_list:
         r = dict(d)
         del r[i]
-    
+
     return r
 
+
 def normalize_dict(input_dict):
- 
-    
+
     if sum(input_dict.values()) == 0:
-        print('Error, dictionary with total zero elements!!')    
-    factor=1.0/sum(input_dict.values())
- 
-    
+        print('Error, dictionary with total zero elements!!')
+    factor = 1.0/sum(input_dict.values())
+
     for k in input_dict:
         input_dict[k] = input_dict[k]*factor
-    
-    return input_dict 
-    
-def Compute_PST(dict_in, correct_answer):
-    
+
+    return input_dict
+
+
+def Compute_PST(dict_in, correct_answer) -> float:
+
     _in = dict_in.copy()
-    norm_dict=normalize_dict(_in)
-    output=0
+    norm_dict = normalize_dict(_in)
+    output = 0
     for ele in correct_answer:
         if ele in norm_dict:
-            output+=norm_dict[ele] 
+            output += norm_dict[ele]
     pst = output
-    
+
     return pst
 
-def Compute_IST(dict_in, correct_answer):
-    
-    #delete correct answers from the input dict 
-    # DON NOT renormalize 
-    norm_dict=normalize_dict(dict_in)
+
+def Compute_IST(dict_in, correct_answer) -> float:
+
+    #delete correct answers from the input dict
+    # DON NOT renormalize
+    norm_dict = normalize_dict(dict_in)
     pst = Compute_PST(norm_dict, correct_answer)
-    test_in=removekey(norm_dict, correct_answer)
-    dominant_Incorr=Counter(test_in).most_common(1)[0][1]         
-    
+    test_in = removekey(norm_dict, correct_answer)
+    dominant_Incorr = Counter(test_in).most_common(1)[0][1]
+
     return pst/dominant_Incorr
 
-def Compute_TVD(dict_in,dict_ideal):
-    
+
+def Compute_TVD(dict_in, dict_ideal) -> float:
+
     dict_in = normalize_dict(dict_in)
-    dict_ideal=normalize_dict(dict_ideal)
+    dict_ideal = normalize_dict(dict_ideal)
     epsilon = 0.00000000001
     _in1 = Counter(dict_in.copy())
     _in2 = Counter(dict_ideal.copy())
@@ -105,8 +112,8 @@ def Compute_TVD(dict_in,dict_ideal):
 
     p = dict(Counter(_in1) + Counter(b))
     q = dict(Counter(_in2) + Counter(a))
-    p=list(dict(sorted(p.items())).values())
-    q=list(dict(sorted(q.items())).values())
+    p = list(dict(sorted(p.items())).values())
+    q = list(dict(sorted(q.items())).values())
 
     list_of_absdiff = []
     for p_i, q_i in zip(p, q):
@@ -114,18 +121,19 @@ def Compute_TVD(dict_in,dict_ideal):
         # caluclate the square of the difference of ith distr elements
         s = abs(p_i - q_i)
 
-        # append 
+        # append
         list_of_absdiff.append(s)
 
     # calculate sum of squares
-    soad = sum(list_of_absdiff)    
+    soad = sum(list_of_absdiff)
 
     return soad/2
 
-def Compute_L2(dict_in,dict_ideal):
-    
+
+def Compute_L2(dict_in, dict_ideal) -> float:
+
     dict_in = normalize_dict(dict_in)
-    dict_ideal=normalize_dict(dict_ideal)
+    dict_ideal = normalize_dict(dict_ideal)
     epsilon = 0.00000000001
     _in1 = Counter(dict_in.copy())
     _in2 = Counter(dict_ideal.copy())
@@ -134,8 +142,8 @@ def Compute_L2(dict_in,dict_ideal):
 
     p = dict(Counter(_in1) + Counter(b))
     q = dict(Counter(_in2) + Counter(a))
-    p=list(dict(sorted(p.items())).values())
-    q=list(dict(sorted(q.items())).values())
+    p = list(dict(sorted(p.items())).values())
+    q = list(dict(sorted(q.items())).values())
 
     list_of_absdiff = []
     for p_i, q_i in zip(p, q):
@@ -143,18 +151,19 @@ def Compute_L2(dict_in,dict_ideal):
         # caluclate the square of the difference of ith distr elements
         s = np.square(p_i - q_i)
 
-        # append 
+        # append
         list_of_absdiff.append(s)
 
     # calculate sum of squares
-    soad = sum(list_of_absdiff)    
+    soad = sum(list_of_absdiff)
 
     return np.sqrt(soad)
 
-def Compute_Hellinger(dict_in,dict_ideal):
-    
+
+def Compute_Hellinger(dict_in, dict_ideal) -> float:
+
     dict_in = normalize_dict(dict_in)
-    dict_ideal=normalize_dict(dict_ideal)
+    dict_ideal = normalize_dict(dict_ideal)
     epsilon = 0.00000000001
     _in1 = Counter(dict_in.copy())
     _in2 = Counter(dict_ideal.copy())
@@ -163,8 +172,8 @@ def Compute_Hellinger(dict_in,dict_ideal):
 
     p = dict(Counter(_in1) + Counter(b))
     q = dict(Counter(_in2) + Counter(a))
-    p=list(dict(sorted(p.items())).values())
-    q=list(dict(sorted(q.items())).values())
+    p = list(dict(sorted(p.items())).values())
+    q = list(dict(sorted(q.items())).values())
 
     list_of_absdiff = []
     for p_i, q_i in zip(p, q):
@@ -172,22 +181,22 @@ def Compute_Hellinger(dict_in,dict_ideal):
         # caluclate the square of the difference of ith distr elements
         s = np.square(np.sqrt(p_i) - np.sqrt(q_i))
 
-        # append 
+        # append
         list_of_absdiff.append(s)
 
     # calculate sum of squares
-    soad = sum(list_of_absdiff)    
+    soad = sum(list_of_absdiff)
 
     return np.sqrt(soad)
 
 
-def Compute_Entropy(dict_in):
-    
+def Compute_Entropy(dict_in) -> float:
+
     _in1 = normalize_dict(dict(dict_in.copy()))
     epsilon = 0.000001
     P = list(dict(Counter(_in1)).values())
     a = Counter(dict.fromkeys(dict_in, epsilon))
     P = list(dict(Counter(_in1) + Counter(a)).values())
     P = np.asarray(P, dtype=np.float)
-        
+
     return -1*sum(P*np.log(P))

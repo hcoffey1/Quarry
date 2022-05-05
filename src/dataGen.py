@@ -1,21 +1,27 @@
 #Input: Gate counts, Average node degree
 #Output: PST, TVD, Entropy, Swaps
 
+import qasm.QASMBench.metrics.OpenQASMetric as QB
 from collections import defaultdict
+from statistics import mean
 from qiskit import QuantumCircuit, transpile
 from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS
 from MachineID import MachineDict
 from pandas import DataFrame
+from Eval_Metrics import get_ESP
+from qiskit.providers.aer.noise import NoiseModel
+
+import networkx
 
 import os
 import sys
 import inspect
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+currentdir = os.path.dirname(os.path.abspath(
+    inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir) 
+sys.path.insert(0, parentdir)
 
-import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 GLOBAL_BASIS_GATES = None
 
@@ -25,17 +31,38 @@ def gen_data_entry(qc, backend):
     coupling_map = backend.configuration().coupling_map
     numQubit = backend.configuration().n_qubits
     name = backend.configuration().backend_name
+    noise = NoiseModel.from_backend(backend)
 
+    #Should we count gates before or after mapping, or both?
+    #Counting gates prior to mapping to topology
     out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
 
     dataEntry = getGateCounts(out_qc, basisGates)
+
+    #Circuit after mapping to topology
+    out_qc = transpile(qc, backend=backend, optimization_level=0)
 
     for gate in GLOBAL_BASIS_GATES:
         if gate not in dataEntry:
             dataEntry[gate] = -1
 
+    graph = networkx.DiGraph()
+    graph.add_edges_from(coupling_map)
+
     dataEntry["Machine"] = MachineDict[name]
+
+    #Topology Metrics
+    dataEntry["GraphDensity"] = networkx.density(graph)
     dataEntry["AvgDegree"] = getAverageDegree(coupling_map)
+    dataEntry["AvgConnectivity"] = networkx.average_node_connectivity(graph)
+    dataEntry["AvgNeighborDegree"] = mean(
+        list(networkx.average_neighbor_degree(graph).values()))
+    dataEntry["AvgClustering"] = networkx.average_clustering(graph)
+    dataEntry["AvgShortestPath"] = networkx.average_shortest_path_length(graph)
+
+    #Avg Error Metrics
+    dataEntry["ESP"] = get_ESP(out_qc, noise=noise)
+
     dataEntry["NumQubit"] = numQubit
     dataEntry["Depth"] = out_qc.depth()
 
