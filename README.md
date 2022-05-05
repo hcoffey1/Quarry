@@ -22,3 +22,19 @@ Misc. functions for use in other files.
 
 ### `Eval_Metrics.py`
 Methods for calculating fidelity metrics.
+
+### Notes from talk
+
+* Is ESP correlated with other metrics?
+  - Spearman's rank correlation coefficient
+  - Are ML models actually worth it compared to ESP?
+  
+* Focus on developing model for swaps
+  - Compare performance against compiler.
+  - Train on heavily optimized circuits, save computation estimating in the future
+
+* Timeline visualization of fitness
+
+* Heatmap of latency for methods (QC size, QM size) -> Latency
+
+* Heatmaps of (Metric1, Metric2) -> ESP ?
