@@ -1,4 +1,6 @@
-from qiskit import Aer, execute, transpile, transpiler
+from qiskit import Aer, execute, transpile, transpiler, QuantumCircuit
+from pandas import DataFrame
+from MachineID import MachineDict
 from statistics import mean
 import Eval_Metrics as EM
 import datetime
@@ -8,6 +10,31 @@ import qiskit.test.mock.backends as BE
 
 #0: Use all available cores
 MAX_JOBS = 24
+
+
+def getV1Input(qc: QuantumCircuit, backend) -> DataFrame:
+    """Returns parameters that can be passed to the V1 Predictor model"""
+    basisGates = backend.configuration().basis_gates
+    name = backend.configuration().backend_name
+    coupling_map = backend.configuration().coupling_map
+    numQubit = backend.configuration().n_qubits
+
+    out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
+
+    output = getGateCounts(out_qc, basisGates)
+    output["Machine"] = MachineDict[name]
+    output["AvgDegree"] = getAverageDegree(coupling_map)
+    output["NumQubit"] = numQubit
+
+    return DataFrame(output, index=[0])
+
+
+def genMachineIDs():
+    backends = extractBackends()
+    i = 0
+    for be in backends:
+        print("\""+be.configuration().backend_name+"\"", ':', i, ',')
+        i += 1
 
 
 def getTS() -> str:

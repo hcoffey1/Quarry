@@ -1,14 +1,3 @@
-from Q_Util import extractBackends
-
-
-def genMachineIDs():
-    backends = extractBackends()
-    i = 0
-    for be in backends:
-        print("\""+be.configuration().backend_name+"\"", ':', i, ',')
-        i += 1
-
-
 MachineDict = {
     "fake_almaden": 0,
     "fake_armonk": 1,

@@ -1,11 +1,9 @@
 #Input: Gate counts, Average node degree
 #Output: PST, TVD, Entropy, Swaps
-
-import qasm.QASMBench.metrics.OpenQASMetric as QB
 from collections import defaultdict
 from statistics import mean
 from qiskit import QuantumCircuit, transpile
-from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS
+from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS, getV1Input
 from MachineID import MachineDict
 from pandas import DataFrame
 from Eval_Metrics import get_ESP
@@ -21,26 +19,22 @@ currentdir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
+import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 
 GLOBAL_BASIS_GATES = None
 
 
-def gen_data_entry(qc, backend):
+def genDataEntry(qc, backend):
     basisGates = backend.configuration().basis_gates
     coupling_map = backend.configuration().coupling_map
     numQubit = backend.configuration().n_qubits
     name = backend.configuration().backend_name
-    noise = NoiseModel.from_backend(backend)
 
-    #Should we count gates before or after mapping, or both?
     #Counting gates prior to mapping to topology
     out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
 
     dataEntry = getGateCounts(out_qc, basisGates)
-
-    #Circuit after mapping to topology
-    out_qc = transpile(qc, backend=backend, optimization_level=0)
 
     for gate in GLOBAL_BASIS_GATES:
         if gate not in dataEntry:
@@ -61,7 +55,6 @@ def gen_data_entry(qc, backend):
     dataEntry["AvgShortestPath"] = networkx.average_shortest_path_length(graph)
 
     #Avg Error Metrics
-    dataEntry["ESP"] = get_ESP(out_qc, noise=noise)
 
     dataEntry["NumQubit"] = numQubit
     dataEntry["Depth"] = out_qc.depth()
@@ -98,9 +91,12 @@ def createDataSet(directory, outputFile):
         backends = getFakeBackends(qc, n)
 
         for be in backends:
-            e = gen_data_entry(qc, be)
+            e = genDataEntry(qc, be)
+            print(getV1Input(qc, be))
             if e != None:
                 entries.append(e)
+
+        break
 
     mergedDict = defaultdict(list)
     for d in entries:
