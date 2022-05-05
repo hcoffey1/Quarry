@@ -178,7 +178,7 @@ def printResultsSim(resultDict, execTime):
                 print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}{:<10.3f}{:<10.3f}".format(
                     backend, PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness))
 
-def estimate(qc, backends, queryFunc, printFunc):
+def query(qc, backends, queryFunc, printFunc):
     #Simulate circuit on each backend
     timeBegin = time.time_ns()
 
@@ -226,14 +226,14 @@ def main():
         n = 10
         backends = QUtil.getFakeBackends(qc, n)
 
-    #estimate(qc, backends, evalCircuitSim, printResultsSim)
-    #estimate(qc, backends, evalCircuitESP, printResultsESP)
+    #query(qc, backends, evalCircuitSim, printResultsSim)
+    #query(qc, backends, evalCircuitESP, printResultsESP)
     
     #PredictorV1.load_models()
-    #estimate(qc, backends, evalCircuitPredictV1, printResultsSim)
+    #query(qc, backends, evalCircuitPredictV1, printResultsSim)
     
     #PredictorV2.load_models()
-    #estimate(qc, backends, evalCircuitPredictV2, printResultsSim)
+    #query(qc, backends, evalCircuitPredictV2, printResultsSim)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@
 import tensorflow as tf
 from sklearn import preprocessing
 from keras.models import Sequential, save_model, load_model
+from keras.utils import plot_model
 from keras.layers import Dense, BatchNormalization
 from keras.activations import sigmoid
 from sklearn.model_selection import train_test_split
@@ -19,8 +20,13 @@ out_columns = {'PST': None, 'TVD': None, 'Entropy': None, 'Swaps': None}
 out_columns_sig = ['PST', 'TVD']
 dataset_path = "./dataSets_V1/dataSets_Noise"
 checkpoint_path = "./models_V1/checkpoint_{}"
+img_path = "./models_V1/img/checkpoint_{}.png"
 scaler_path = "./models_V1/scaler.save"
 
+def plot_models():
+    load_models()
+    for out in out_columns:
+        plot_model(out_columns[out], to_file=img_path.format(out), show_shapes=True)
 
 def load_models():
     for out in out_columns:
@@ -131,6 +137,7 @@ def main():
                          validation_data=(X_val, Y_val_out))
 
         save_model(model=model, filepath=checkpoint_path.format(out_column))
+        plot_model(out_columns[out_column], to_file=img_path.format(out_column), show_shapes=True)
 
 
 if __name__ == "__main__":
