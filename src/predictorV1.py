@@ -11,6 +11,10 @@ Original file is located at
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import matplotlib
+from sklearn import preprocessing
+from keras.models import Sequential
+from keras.layers import Dense, BatchNormalization
+from sklearn.model_selection import train_test_split
 
 # Commonly used modules
 import numpy as np
@@ -21,72 +25,76 @@ import sys
 from os import listdir
 from os.path import isfile, join
 
-# Import dataset (temporary)
 
-out_columns = ['PST', 'TVD', 'Entropy', 'Swaps']
+def queryModel(input):
+    """Load in v1 model and make prediction"""
+    output = None
 
-dataset_path = "./dataSets_V1/dataSets_Noise"
-files = [join(dataset_path, f) for f in listdir(dataset_path) if isfile(join(dataset_path, f))]
+    return output
 
-dfs = [pd.read_csv(f) for f in files]
-df = pd.concat(dfs)
 
-X = df.drop(columns = out_columns)
-Y = df[out_columns]
+def main():
+    out_columns = ['PST', 'TVD', 'Entropy', 'Swaps']
 
-from sklearn import preprocessing
+    dataset_path = "./dataSets_V1/dataSets_Noise"
+    files = [join(dataset_path, f) for f in listdir(
+        dataset_path) if isfile(join(dataset_path, f))]
 
-# Scaling
+    dfs = [pd.read_csv(f) for f in files]
+    df = pd.concat(dfs)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-X_scale = min_max_scaler.fit_transform(X)
+    X = df.drop(columns=out_columns)
+    Y = df[out_columns]
 
-from sklearn.model_selection import train_test_split
+    # Scaling
+    min_max_scaler = preprocessing.MinMaxScaler()
+    X_scale = min_max_scaler.fit_transform(X)
 
-X_train, X_val_and_test, Y_train, Y_val_and_test = train_test_split(X_scale, Y, test_size=0.3)
-X_val, X_test, Y_val, Y_test = train_test_split(X_val_and_test, Y_val_and_test, test_size=0.5)
+    X_train, X_val_and_test, Y_train, Y_val_and_test = train_test_split(
+        X_scale, Y, test_size=0.3)
+    X_val, X_test, Y_val, Y_test = train_test_split(
+        X_val_and_test, Y_val_and_test, test_size=0.5)
 
-import pandas as pd
-from keras.models import Sequential
-from keras.layers import Dense, BatchNormalization
+    # Baseline model
+    Y = Y[['TVD']]
+    Y_train = Y_train[['TVD']]
+    Y_test = Y_test[['TVD']]
+    Y_val = Y_val[['TVD']]
 
-# Baseline model
+    input_size = len(X.columns)
+    output_size = len(Y.columns)
 
-Y = Y[['TVD']]
-Y_train = Y_train[['TVD']]
-Y_test = Y_test[['TVD']]
-Y_val = Y_val[['TVD']]
+    leaky_relu = tf.keras.layers.LeakyReLU(alpha=0.01)
 
-input_size = len(X.columns)
-output_size = len(Y.columns)
+    model = Sequential([
+        Dense(512, activation=leaky_relu, input_shape=(input_size,)),
+        BatchNormalization(),
 
-leaky_relu = tf.keras.layers.LeakyReLU(alpha=0.01)
+        Dense(256, activation=leaky_relu),
+        BatchNormalization(),
 
-model = Sequential([
-    Dense(512, activation=leaky_relu, input_shape=(input_size,)),
-    BatchNormalization(),
+        Dense(256, activation=leaky_relu),
+        BatchNormalization(),
 
-    Dense(256, activation=leaky_relu),
-    BatchNormalization(),
+        Dense(128, activation=leaky_relu),
+        BatchNormalization(),
 
-    Dense(256, activation=leaky_relu),
-    BatchNormalization(),
+        Dense(output_size, activation='linear'),
+    ])
 
-    Dense(128, activation=leaky_relu),
-    BatchNormalization(),
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.005, decay=5e-4)
+    model.compile(optimizer=optimizer,
+                  loss='mean_absolute_error',
+                  metrics=['MSE'])
 
-    Dense(output_size, activation='linear'),
-])
+    hist = model.fit(X_train, Y_train,
+                     batch_size=32, epochs=200,
+                     validation_data=(X_val, Y_val))
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=0.005, decay=5e-4)
-model.compile(optimizer=optimizer,
-              loss='mean_absolute_error',
-              metrics=['MSE'])
+    model.evaluate(X_test, Y_test)[1]
 
-hist = model.fit(X_train, Y_train,
-          batch_size=32, epochs=200,
-          validation_data=(X_val, Y_val))
+    print(model(X_test[0:10]).numpy(), Y_test[0:10])
 
-model.evaluate(X_test, Y_test)[1]
 
-print(model(X_test[0:10]).numpy(), Y_test[0:10])
+if __name__ == "__main__":
+    main()
