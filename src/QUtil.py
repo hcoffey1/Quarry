@@ -5,6 +5,16 @@ from MachineID import MachineDict
 from statistics import mean
 import EvalMetrics as EM
 import datetime
+import networkx
+import os
+import inspect
+import sys
+
+currentdir = os.path.dirname(os.path.abspath(
+    inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 #Mockup backends
 import qiskit.test.mock.backends as BE
@@ -97,6 +107,48 @@ def getV1Input(qc: QuantumCircuit, backend) -> DataFrame:
 
     return DataFrame(output, index=[0])
 
+def getV2Input(qc: QuantumCircuit, backend) -> DataFrame:
+    basisGates = backend.configuration().basis_gates
+    coupling_map = backend.configuration().coupling_map
+    numQubit = backend.configuration().n_qubits
+    name = backend.configuration().backend_name
+    noise = NoiseModel.from_backend(backend)
+
+    #Counting gates prior to mapping to topology
+    out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
+
+    output = getGateCounts(out_qc, basisGates)
+
+    for gate in GLOBAL_BASIS_GATES:
+        if gate not in output:
+            output[gate] = -1
+
+    #Avg Error Metrics
+    output["measureSuccess"] = getAvgMeasurementSuccess(noise)
+    output = {**output, **(getAvgGateSuccess(noise))}
+
+    #Topology Metrics
+    graph = networkx.DiGraph()
+    graph.add_edges_from(coupling_map)
+
+    output["Machine"] = MachineDict[name]
+
+    output["GraphDensity"] = networkx.density(graph)
+    output["AvgDegree"] = getAverageDegree(coupling_map)
+    output["AvgConnectivity"] = networkx.average_node_connectivity(graph)
+    output["AvgNeighborDegree"] = mean(
+        list(networkx.average_neighbor_degree(graph).values()))
+    output["AvgClustering"] = networkx.average_clustering(graph)
+    output["AvgShortestPath"] = networkx.average_shortest_path_length(graph)
+
+    #Circuit Metrics
+    output["NumQubit"] = numQubit
+    output["Depth"] = out_qc.depth()
+
+    QB_metric = QB.QASMetric(out_qc.qasm())
+    output = {**output, **(QB_metric.evaluate_qasm())}
+
+    return output
 
 def genMachineIDs():
     backends = extractBackends()

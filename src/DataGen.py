@@ -22,51 +22,13 @@ import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 
 def genDataEntry(qc, backend):
-    basisGates = backend.configuration().basis_gates
-    coupling_map = backend.configuration().coupling_map
-    numQubit = backend.configuration().n_qubits
-    name = backend.configuration().backend_name
-    noise = NoiseModel.from_backend(backend)
-
-    #Counting gates prior to mapping to topology
-    out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
-
-    dataEntry = QUtil.getGateCounts(out_qc, basisGates)
-
-    for gate in QUtil.GLOBAL_BASIS_GATES:
-        if gate not in dataEntry:
-            dataEntry[gate] = -1
-
-    #Avg Error Metrics
-    dataEntry["measureSuccess"] = QUtil.getAvgMeasurementSuccess(noise)
-    dataEntry = {**dataEntry, **(QUtil.getAvgGateSuccess(noise))}
-
-    #Topology Metrics
-    graph = networkx.DiGraph()
-    graph.add_edges_from(coupling_map)
-
-    dataEntry["Machine"] = MachineDict[name]
-
-    dataEntry["GraphDensity"] = networkx.density(graph)
-    dataEntry["AvgDegree"] = QUtil.getAverageDegree(coupling_map)
-    dataEntry["AvgConnectivity"] = networkx.average_node_connectivity(graph)
-    dataEntry["AvgNeighborDegree"] = mean(
-        list(networkx.average_neighbor_degree(graph).values()))
-    dataEntry["AvgClustering"] = networkx.average_clustering(graph)
-    dataEntry["AvgShortestPath"] = networkx.average_shortest_path_length(graph)
-
-    #Circuit Metrics
-    dataEntry["NumQubit"] = numQubit
-    dataEntry["Depth"] = out_qc.depth()
-
-    QB_metric = QB.QASMetric(out_qc.qasm())
-    dataEntry = {**dataEntry, **(QB_metric.evaluate_qasm())}
+    dataEntry = QUtil.getV2Input(qc, backend)
 
     outEntries = QUtil.simCircuit(qc, backend)
 
     if outEntries == None:
         return None
-
+    
     #Output Metrics
     dataEntry['PST'] = outEntries[0]
     dataEntry['TVD'] = outEntries[1]
@@ -104,20 +66,23 @@ def createDataSet(directory, outputFile):
 
     df.to_csv(outputFile, index=False)
 
-
-def main():
-    QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
-
+def runNoise():
     ts = QUtil.getTS()
     directory = "./qasm/Noise_Benchmarks/"
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
+def runSupermarQ():
     ts = QUtil.getTS()
     directory = "./qasm/SupermarQ/"
     outFile = './dataSets_V2/dataSets_SupermarQ/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
+def main():
+    QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
+
+    #runNoise()
+    #runSupermarQ()
 
 if __name__ == "__main__":
 	main()
