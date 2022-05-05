@@ -17,10 +17,10 @@ import sys
 from os import listdir
 from os.path import isfile, join
 
-out_columns = ['PST', 'TVD', 'Entropy', 'Swaps']
-dataset_path = "../dataSets_V1/dataSets_Noise"
-checkpoint_path = "../models_V1/checkpoint_{}"
-scaler_path = "../models_V1/scaler.save"
+out_columns = ['PST', 'TVD', 'Entropy', 'Swaps', 'L2', 'Hellinger']
+dataset_path = "../dataSets_V2/dataSets_Noise"
+checkpoint_path = "../models_V2/checkpoint_{}"
+scaler_path = "../models_V2/scaler.save"
 
 
 def create_model(input_size, output_size):
