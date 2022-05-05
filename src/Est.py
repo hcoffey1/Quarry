@@ -1,3 +1,4 @@
+from unittest import result
 from qiskit import QuantumCircuit, Aer, execute, IBMQ
 import sys
 import time
@@ -7,7 +8,11 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
 import EvalMetrics as EM
 
-from QUtil import simCircuit, getFakeBackends, MAX_JOBS, getESP
+#from QUtil import simCircuit, getFakeBackends, MAX_JOBS, getESP, getV1Input, GLOBAL_BASIS_GATES, getGlobalBasisGates
+import QUtil
+
+import PredictorV1
+import PredictorV2
 
 
 def evalCircuitSim(resultDict, qc, backend):
@@ -19,7 +24,7 @@ def evalCircuitSim(resultDict, qc, backend):
         resultDict[qc.name] = []
 
     print(backendName, backend.configuration().n_qubits)
-    resultDict[qc.name].append([backendName, simCircuit(qc, backend)])
+    resultDict[qc.name].append([backendName, QUtil.simCircuit(qc, backend)])
 
 
 def evalCircuitESP(resultDict, qc, backend):
@@ -35,9 +40,36 @@ def evalCircuitESP(resultDict, qc, backend):
     unroll_qc = transpile(qc, basis_gates=basisGates,
                           optimization_level=0, backend=backend)
 
-    esp = getESP(unroll_qc, NoiseModel.from_backend(backend))
+    esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
     resultDict[qc.name].append([backendName, esp])
 
+def evalCircuitPredictV1(resultDict, qc, backend):
+    backendName = backend.configuration().backend_name
+
+    if qc.name not in resultDict:
+        resultDict[qc.name] = []
+
+    args = QUtil.getV1Input(qc, backend)
+
+    outDict = {}
+    for output in PredictorV1.out_columns:
+        outDict[output] = float(PredictorV1.queryModel(args, output)[0][0])
+    outDict["Fitness"] = EM.fitness(outDict["PST"], outDict["TVD"], outDict["Entropy"], outDict["Swaps"], 1, 1)
+    resultDict[qc.name].append([backendName, outDict])
+
+def evalCircuitPredictV2(resultDict, qc, backend):
+    backendName = backend.configuration().backend_name
+
+    if qc.name not in resultDict:
+        resultDict[qc.name] = []
+
+    args = QUtil.getV2Input(qc, backend)
+
+    outDict = {}
+    for output in PredictorV2.out_columns:
+        outDict[output] = float(PredictorV2.queryModel(args, output)[0][0])
+    outDict["Fitness"] = EM.fitness(outDict["PST"], outDict["TVD"], outDict["Entropy"], outDict["Swaps"], 1, 1)
+    resultDict[qc.name].append([backendName, outDict])
 
 def simCircuitIBMQ(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics, TODO: Update this to work with new framework'''
@@ -46,9 +78,9 @@ def simCircuitIBMQ(resultDict, qc, backend):
     nm = NoiseModel.from_backend(backend)
 
     ideal_result = execute(
-        qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()
+        qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=QUtil.MAX_JOBS).result()
     noisy_result = execute(qc, backend=Aer.get_backend(
-        'qasm_simulator'), noise_model=nm, max_parallel_threads=MAX_JOBS).result()
+        'qasm_simulator'), noise_model=nm, max_parallel_threads=QUtil.MAX_JOBS).result()
 
     PST = EM.computePST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
@@ -83,6 +115,10 @@ def printResultsESP(resultDict, execTime):
         for h in header:
             print("{h:{field_size}}".format(h=h[0], field_size=h[1]), end='')
         print('')
+    
+    for k in resultDict.keys():
+        resultDict[k] = sorted(
+            resultDict[k], key=lambda i: i[1], reverse=True)
 
     for file in resultDict.keys():
         print("{} {:.6f}(s) {}".format(
@@ -115,6 +151,10 @@ def printResultsSim(resultDict, execTime):
             print("{h:{field_size}}".format(h=h[0], field_size=h[1]), end='')
         print('')
 
+    for k in resultDict.keys():
+        resultDict[k] = sorted(
+            resultDict[k], key=lambda i: i[1]["Fitness"], reverse=True)
+
     for file in resultDict.keys():
         print("{} {:.6f}(s) {}".format(
             file, execTime/(10**9), '++++++++++++++'))
@@ -122,21 +162,42 @@ def printResultsSim(resultDict, execTime):
 
         for i in range(len(resultDict[file])):
             backend = resultDict[file][i][0]
-            PST = resultDict[file][i][1][0]
-            TVD = resultDict[file][i][1][1]
-            Entropy = resultDict[file][i][1][2]
-            swapCount = resultDict[file][i][1][3]
-            L2 = resultDict[file][i][1][4]
-            Hellinger = resultDict[file][i][1][5]
-            Fitness = resultDict[file][i][1][6]
-            print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}{:<10.3f}{:<10.3f}".format(
-                backend, PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness))
+            PST = resultDict[file][i][1]["PST"]
+            TVD = resultDict[file][i][1]["TVD"]
+            Entropy = resultDict[file][i][1]["Entropy"]
+            swapCount = int(resultDict[file][i][1]["Swaps"])
+            Fitness = resultDict[file][i][1]["Fitness"]
 
+            if "L2" not in resultDict[file][i][1]:
+                print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3}{:<10}{:<10.3f}".format(
+                    backend, PST, TVD, Entropy, swapCount, "N/A", "N/A", Fitness))
+            else:
+                L2 = resultDict[file][i][1]["L2"]
+                Hellinger = resultDict[file][i][1]["Hellinger"]
+                print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}{:<10.3f}{:<10.3f}".format(
+                    backend, PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness))
+
+def estimate(qc, backends, queryFunc, printFunc):
+    #Simulate circuit on each backend
+    timeBegin = time.time_ns()
+
+    resultDictSim = {}
+    for backend in backends:
+        queryFunc(resultDictSim, qc, backend)
+    timeEnd = time.time_ns()
+
+    #Time taken to simulate
+    execTime = timeEnd - timeBegin
+
+    #Output
+    printFunc(resultDictSim, execTime)
 
 def main():
     if len(sys.argv) == 1:
         print("Usage: {} file.qasm".format(sys.argv[0]))
         return 1
+
+    QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
     inputFile = sys.argv[1]
 
@@ -162,41 +223,12 @@ def main():
 
     else:
         n = 10
-        backends = getFakeBackends(qc, n)
+        backends = QUtil.getFakeBackends(qc, n)
 
-    #Simulate circuit on each backend
-    timeBegin = time.time_ns()
-
-    resultDictSim = {}
-    for backend in backends:
-        evalCircuitSim(resultDictSim, qc, backend)
-    timeEnd = time.time_ns()
-
-    resultDictSim[qc.name] = sorted(
-        resultDictSim[qc.name], key=lambda i: i[1][6], reverse=True)
-
-    #Time taken to simulate
-    execTime = timeEnd - timeBegin
-
-    #Output
-    printResultsSim(resultDictSim, execTime)
-
-    timeBegin = time.time_ns()
-
-    #Estimate circuit on each backend with ESP
-    resultDictESP = {}
-    for backend in backends:
-        evalCircuitESP(resultDictESP, qc, backend)
-    timeEnd = time.time_ns()
-
-    resultDictESP[qc.name] = sorted(
-        resultDictESP[qc.name], key=lambda i: i[1], reverse=True)
-
-    #Time taken
-    execTime = timeEnd - timeBegin
-
-    #Output
-    printResultsESP(resultDictESP, execTime)
+    #estimate(qc, backends, evalCircuitSim, printResultsSim)
+    #estimate(qc, backends, evalCircuitESP, printResultsESP)
+    #estimate(qc, backends, evalCircuitPredictV1, printResultsSim)
+    #estimate(qc, backends, evalCircuitPredictV2, printResultsSim)
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ sys.path.insert(0, parentdir)
 import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 
-def genDataEntry(qc, backend):
+def genDataEntry(qc, backend) -> DataFrame:
     dataEntry = QUtil.getV2Input(qc, backend)
 
     outEntries = QUtil.simCircuit(qc, backend)
@@ -40,7 +40,7 @@ def genDataEntry(qc, backend):
     return dataEntry
 
 
-def createDataSet(directory, outputFile):
+def createDataSet(directory, outputFile) -> None:
     entries = []
     for inputFile in os.listdir(directory):
         print("Running", inputFile, "...")
@@ -66,13 +66,13 @@ def createDataSet(directory, outputFile):
 
     df.to_csv(outputFile, index=False)
 
-def runNoise():
+def runNoise() -> None:
     ts = QUtil.getTS()
     directory = "./qasm/Noise_Benchmarks/"
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
-def runSupermarQ():
+def runSupermarQ() -> None:
     ts = QUtil.getTS()
     directory = "./qasm/SupermarQ/"
     outFile = './dataSets_V2/dataSets_SupermarQ/' + ts + '_data.csv'

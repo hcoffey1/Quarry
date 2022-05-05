@@ -18,9 +18,9 @@ from os import listdir
 from os.path import isfile, join
 
 out_columns = ['PST', 'TVD', 'Entropy', 'Swaps']
-dataset_path = "../dataSets_V1/dataSets_Noise"
-checkpoint_path = "../models_V1/checkpoint_{}"
-scaler_path = "../models_V1/scaler.save"
+dataset_path = "./dataSets_V1/dataSets_Noise"
+checkpoint_path = "./models_V1/checkpoint_{}"
+scaler_path = "./models_V1/scaler.save"
 
 
 def create_model(input_size, output_size):
@@ -44,15 +44,13 @@ def create_model(input_size, output_size):
     
     return model
 
-def queryModel(csv, out_column):
+def queryModel(X : pd.DataFrame, out_column : str):
     """Load in v1 model and make prediction"""
     if out_column not in out_columns:
         # Raise error?
         return None
 
-    df = pd.read_csv(csv)
     min_max_scaler = joblib.load(scaler_path)  
-    X = df.drop(columns=out_columns)
     X_scale = min_max_scaler.transform(X)
    
     model = create_model(len(X.columns), 1)

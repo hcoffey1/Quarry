@@ -101,11 +101,17 @@ def getV1Input(qc: QuantumCircuit, backend) -> DataFrame:
     out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
 
     output = getGateCounts(out_qc, basisGates)
+
+    for gate in GLOBAL_BASIS_GATES:
+        if gate not in output:
+            output[gate] = -1
+
     output["Machine"] = MachineDict[name]
     output["AvgDegree"] = getAverageDegree(coupling_map)
     output["NumQubit"] = numQubit
 
     return DataFrame(output, index=[0])
+
 
 def getV2Input(qc: QuantumCircuit, backend) -> DataFrame:
     basisGates = backend.configuration().basis_gates
@@ -148,7 +154,8 @@ def getV2Input(qc: QuantumCircuit, backend) -> DataFrame:
     QB_metric = QB.QASMetric(out_qc.qasm())
     output = {**output, **(QB_metric.evaluate_qasm())}
 
-    return output
+    return DataFrame(output, index=[0])
+
 
 def genMachineIDs():
     backends = extractBackends()
@@ -224,28 +231,32 @@ def simCircuit(qc, backend):
     except transpiler.exceptions.TranspilerError:
         return None
 
-    swapCount = getGateCounts(swap_qc, basisGates)['swap']
+    outDict = {}
+
+    outDict["Swaps"] = getGateCounts(swap_qc, basisGates)['swap']
 
     ideal_result = execute(
         qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()
     noisy_result = execute(qc, backend=backend,
                            max_parallel_threads=MAX_JOBS).result()
 
-    PST = EM.computePST(correct_answer=ideal_result.get_counts(
+
+    outDict["PST"] = EM.computePST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
 
-    TVD = EM.computeTVD(dict_ideal=ideal_result.get_counts(
+    outDict["TVD"] = EM.computeTVD(dict_ideal=ideal_result.get_counts(
     ), dict_in=noisy_result.get_counts())
 
-    Entropy = EM.computeEntropy(dict_in=noisy_result.get_counts())
+    outDict["Entropy"] = EM.computeEntropy(dict_in=noisy_result.get_counts())
 
-    L2 = EM.computeL2(noisy_result.get_counts(), ideal_result.get_counts())
-    Hellinger = EM.computeHellinger(
+    outDict["L2"] = EM.computeL2(noisy_result.get_counts(), ideal_result.get_counts())
+    outDict["Hellinger"] = EM.computeHellinger(
         noisy_result.get_counts(), ideal_result.get_counts())
 
-    Fitness = EM.fitness(PST, TVD, Entropy, swapCount, Hellinger, L2)
+    outDict["Fitness"] = EM.fitness(outDict["PST"], outDict["TVD"], outDict["Entropy"],
+                                    outDict["Swaps"], outDict["Hellinger"], outDict["L2"])
 
-    return [PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness]
+    return outDict
 
 
 def extractBackends():
