@@ -33,6 +33,9 @@ Methods for calculating fidelity metrics.
   - Compare performance against compiler.
   - Train on heavily optimized circuits, save computation estimating in the future
 
+* Design model for predicting fitness instead of other metrics?
+  - Could benefit prototype implementation. Only need to train 1 model instead of all the component metric models.
+
 * Timeline visualization of fitness
 
 * Heatmap of latency for methods (QC size, QM size) -> Latency
