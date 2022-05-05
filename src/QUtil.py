@@ -74,9 +74,9 @@ def getESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
             continue
 
         if len(qargs) > 1:
-            qb = str(qargs[0]._index)+','+str(qargs[1]._index)
+            qb = ((qargs[0]._index), (qargs[1]._index))
         else:
-            qb = str(qargs[0]._index)
+            qb = (qargs[0]._index, )
 
         if instruction.name == 'measure':
             m0e = (noise._local_readout_errors[qb].probabilities[0][0])

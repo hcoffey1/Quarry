@@ -32,14 +32,12 @@ def evalCircuitESP(resultDict, qc, backend):
     '''Estimate circuit fidelity via ESP'''
 
     backendName = backend.configuration().backend_name
-    basisGates = backend.configuration().basis_gates
 
     if qc.name not in resultDict:
         resultDict[qc.name] = []
 
     print(backendName, backend.configuration().n_qubits)
-    unroll_qc = transpile(qc, basis_gates=basisGates,
-                          optimization_level=0, backend=backend)
+    unroll_qc = transpile(qc, optimization_level=0, backend=backend)
 
     esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
     resultDict[qc.name].append([backendName, esp])
@@ -133,7 +131,7 @@ def printResultsESP(resultDict, execTime):
                 backend, ESP))
 
 
-def printResultsSim(resultDict, execTime):
+def printResults(resultDict, execTime):
     '''Prints metrics per backend on each circuit'''
 
     header = [
@@ -226,14 +224,18 @@ def main():
         n = 10
         backends = QUtil.getFakeBackends(qc, n)
 
-    #query(qc, backends, evalCircuitSim, printResultsSim)
-    #query(qc, backends, evalCircuitESP, printResultsESP)
+    #Simulation
+    query(qc, backends, evalCircuitSim, printResults)
+
+    #ESP Estimate
+    query(qc, backends, evalCircuitESP, printResultsESP)
+
+    #ML Models 
+    PredictorV1.load_models()
+    query(qc, backends, evalCircuitPredictV1, printResults)
     
-    #PredictorV1.load_models()
-    #query(qc, backends, evalCircuitPredictV1, printResultsSim)
-    
-    #PredictorV2.load_models()
-    #query(qc, backends, evalCircuitPredictV2, printResultsSim)
+    PredictorV2.load_models()
+    query(qc, backends, evalCircuitPredictV2, printResults)
 
 
 if __name__ == "__main__":
