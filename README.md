@@ -28,6 +28,7 @@ Methods for calculating fidelity metrics.
 * Is ESP correlated with other metrics?
   - Spearman's rank correlation coefficient
   - Are ML models actually worth it compared to ESP?
+  - Use OpenMP to multithread computation.
   
 * Focus on developing model for swaps
   - Compare performance against compiler.
