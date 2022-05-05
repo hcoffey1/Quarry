@@ -1,4 +1,4 @@
-# CS 758 Class Project
+# Quarry: Providing fast quantum circuit fidelity estimation.
 
 ## Files
 
