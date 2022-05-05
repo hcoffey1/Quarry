@@ -3,61 +3,85 @@
 # TensorFlow and tf.keras
 import tensorflow as tf
 from sklearn import preprocessing
-from keras.models import Sequential
+from keras.models import Sequential, save_model, load_model
 from keras.layers import Dense, BatchNormalization
 from sklearn.model_selection import train_test_split
+from keras.activations import sigmoid
 import joblib
 
 # Commonly used modules
-import numpy as np
 import pandas as pd
-import os
-import sys
 
 from os import listdir
 from os.path import isfile, join
 
-out_columns = ['PST', 'TVD', 'Entropy', 'Swaps', 'L2', 'Hellinger']
+out_columns = {'PST': None, 'TVD': None, 'Entropy': None, 'Swaps': None, 'L2': None, 'Hellinger': None}
+out_columns_sig = ['PST', 'TVD', 'L2']
 dataset_path = "./dataSets_V2/dataSets_Noise"
 checkpoint_path = "./models_V2/checkpoint_{}"
 scaler_path = "./models_V2/scaler.save"
 
+def load_models():
+    for out in out_columns:
+        out_columns[out] = load_model(checkpoint_path.format(out))
 
 def create_model(input_size, output_size):
     leaky_relu = tf.keras.layers.LeakyReLU(alpha=0.01)
+    relu = tf.keras.layers.ReLU()
 
     model = Sequential([
-        Dense(512, activation=leaky_relu, input_shape=(input_size,)),
+        Dense(512, activation=relu, input_shape=(input_size,)),
         BatchNormalization(),
 
-        Dense(256, activation=leaky_relu),
+        Dense(256, activation=relu),
         BatchNormalization(),
 
-        Dense(256, activation=leaky_relu),
+        Dense(256, activation=relu),
         BatchNormalization(),
 
-        Dense(128, activation=leaky_relu),
+        Dense(128, activation=sigmoid),
         BatchNormalization(),
 
-        Dense(output_size, activation='linear'),
+        Dense(output_size, activation=relu),
     ])
-    
+
     return model
 
-def queryModel(X : pd.DataFrame, out_column : str):
+
+def create_model_sigmoid(input_size, output_size):
+    leaky_relu = tf.keras.layers.LeakyReLU(alpha=0.01)
+    relu = tf.keras.layers.ReLU()
+
+    model = Sequential([
+        Dense(512, activation=relu, input_shape=(input_size,)),
+        BatchNormalization(),
+
+        Dense(256, activation=relu),
+        BatchNormalization(),
+
+        Dense(256, activation=relu),
+        BatchNormalization(),
+
+        Dense(128, activation=sigmoid),
+        BatchNormalization(),
+
+        Dense(output_size, activation=sigmoid),
+    ])
+
+    return model
+
+def queryModel(X: pd.DataFrame, out_column: str):
     """Load in v1 model and make prediction"""
     if out_column not in out_columns:
         # Raise error?
         return None
 
-    min_max_scaler = joblib.load(scaler_path)  
+    min_max_scaler = joblib.load(scaler_path)
     X_scale = min_max_scaler.transform(X)
-   
-    model = create_model(len(X.columns), 1)
-    model.load_weights(checkpoint_path.format(out_column))
+
+    model = out_columns[out_column]
 
     return model(X_scale)
-
 
 def main():
 
@@ -88,7 +112,10 @@ def main():
         Y_test_out = Y_test[[out_column]]
         Y_val_out = Y_val[[out_column]]
 
-        model = create_model(len(X.columns), 1)
+        if out_column in out_columns_sig:
+            model = create_model_sigmoid(len(X.columns), 1)
+        else:
+            model = create_model(len(X.columns), 1)
 
         optimizer = tf.keras.optimizers.Adam(learning_rate=0.005, decay=5e-4)
         model.compile(optimizer=optimizer,
@@ -99,10 +126,7 @@ def main():
                          batch_size=32, epochs=200,
                          validation_data=(X_val, Y_val_out))
 
-        model.save_weights(checkpoint_path.format(out_column))
-
-    # print(model(X_test[0:10]).numpy(), Y_test[0:10])
-
+        save_model(model=model, filepath=checkpoint_path.format(out_column))
 
 if __name__ == "__main__":
     main()

@@ -23,7 +23,9 @@ def evalCircuitSim(resultDict, qc, backend):
         resultDict[qc.name] = []
 
     print(backendName, backend.configuration().n_qubits)
-    resultDict[qc.name].append([backendName, QUtil.simCircuit(qc, backend)])
+    out = QUtil.simCircuit(qc, backend)
+    if out != None:
+        resultDict[qc.name].append([backendName, QUtil.simCircuit(qc, backend)])
 
 
 def evalCircuitESP(resultDict, qc, backend):
@@ -226,10 +228,11 @@ def main():
 
     #estimate(qc, backends, evalCircuitSim, printResultsSim)
     #estimate(qc, backends, evalCircuitESP, printResultsESP)
-
+    
     #PredictorV1.load_models()
     #estimate(qc, backends, evalCircuitPredictV1, printResultsSim)
-
+    
+    #PredictorV2.load_models()
     #estimate(qc, backends, evalCircuitPredictV2, printResultsSim)
 
 
