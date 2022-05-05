@@ -8,7 +8,6 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
 import EvalMetrics as EM
 
-#from QUtil import simCircuit, getFakeBackends, MAX_JOBS, getESP, getV1Input, GLOBAL_BASIS_GATES, getGlobalBasisGates
 import QUtil
 
 import PredictorV1
@@ -227,7 +226,10 @@ def main():
 
     #estimate(qc, backends, evalCircuitSim, printResultsSim)
     #estimate(qc, backends, evalCircuitESP, printResultsESP)
+
+    #PredictorV1.load_models()
     #estimate(qc, backends, evalCircuitPredictV1, printResultsSim)
+
     #estimate(qc, backends, evalCircuitPredictV2, printResultsSim)
 
 
