@@ -26,11 +26,12 @@ def fitness(PST, TVD, Entropy, Swaps, Hellinger, L2) -> float:
 
     return fitness
 
-#Estimated Success Probability
-#https://dl.acm.org/doi/abs/10.1145/3386162
 
-
-def get_ESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
+def getESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
+    """
+    Estimated Success Probability
+    https://dl.acm.org/doi/abs/10.1145/3386162
+    """
     esp = 1
 
     for instruction, qargs, cargs in qc._data:
@@ -54,8 +55,11 @@ def get_ESP(qc: QuantumCircuit, noise: NoiseModel) -> float:
 
     return esp
 
+def getAvgMeasurementError():
+    pass
 
-def removekey(d, key_list):
+
+def _removekey(d, key_list):
     for i in key_list:
         r = dict(d)
         del r[i]
@@ -63,7 +67,7 @@ def removekey(d, key_list):
     return r
 
 
-def normalize_dict(input_dict):
+def normalizeDict(input_dict):
 
     if sum(input_dict.values()) == 0:
         print('Error, dictionary with total zero elements!!')
@@ -75,10 +79,10 @@ def normalize_dict(input_dict):
     return input_dict
 
 
-def Compute_PST(dict_in, correct_answer) -> float:
+def computePST(dict_in, correct_answer) -> float:
 
     _in = dict_in.copy()
-    norm_dict = normalize_dict(_in)
+    norm_dict = normalizeDict(_in)
     output = 0
     for ele in correct_answer:
         if ele in norm_dict:
@@ -88,22 +92,22 @@ def Compute_PST(dict_in, correct_answer) -> float:
     return pst
 
 
-def Compute_IST(dict_in, correct_answer) -> float:
+def computeIST(dict_in, correct_answer) -> float:
 
     #delete correct answers from the input dict
     # DON NOT renormalize
-    norm_dict = normalize_dict(dict_in)
-    pst = Compute_PST(norm_dict, correct_answer)
-    test_in = removekey(norm_dict, correct_answer)
+    norm_dict = normalizeDict(dict_in)
+    pst = computePST(norm_dict, correct_answer)
+    test_in = _removekey(norm_dict, correct_answer)
     dominant_Incorr = Counter(test_in).most_common(1)[0][1]
 
     return pst/dominant_Incorr
 
 
-def Compute_TVD(dict_in, dict_ideal) -> float:
+def computeTVD(dict_in, dict_ideal) -> float:
 
-    dict_in = normalize_dict(dict_in)
-    dict_ideal = normalize_dict(dict_ideal)
+    dict_in = normalizeDict(dict_in)
+    dict_ideal = normalizeDict(dict_ideal)
     epsilon = 0.00000000001
     _in1 = Counter(dict_in.copy())
     _in2 = Counter(dict_ideal.copy())
@@ -130,10 +134,10 @@ def Compute_TVD(dict_in, dict_ideal) -> float:
     return soad/2
 
 
-def Compute_L2(dict_in, dict_ideal) -> float:
+def computeL2(dict_in, dict_ideal) -> float:
 
-    dict_in = normalize_dict(dict_in)
-    dict_ideal = normalize_dict(dict_ideal)
+    dict_in = normalizeDict(dict_in)
+    dict_ideal = normalizeDict(dict_ideal)
     epsilon = 0.00000000001
     _in1 = Counter(dict_in.copy())
     _in2 = Counter(dict_ideal.copy())
@@ -160,10 +164,10 @@ def Compute_L2(dict_in, dict_ideal) -> float:
     return np.sqrt(soad)
 
 
-def Compute_Hellinger(dict_in, dict_ideal) -> float:
+def computeHellinger(dict_in, dict_ideal) -> float:
 
-    dict_in = normalize_dict(dict_in)
-    dict_ideal = normalize_dict(dict_ideal)
+    dict_in = normalizeDict(dict_in)
+    dict_ideal = normalizeDict(dict_ideal)
     epsilon = 0.00000000001
     _in1 = Counter(dict_in.copy())
     _in2 = Counter(dict_ideal.copy())
@@ -190,9 +194,9 @@ def Compute_Hellinger(dict_in, dict_ideal) -> float:
     return np.sqrt(soad)
 
 
-def Compute_Entropy(dict_in) -> float:
+def computeEntropy(dict_in) -> float:
 
-    _in1 = normalize_dict(dict(dict_in.copy()))
+    _in1 = normalizeDict(dict(dict_in.copy()))
     epsilon = 0.000001
     P = list(dict(Counter(_in1)).values())
     a = Counter(dict.fromkeys(dict_in, epsilon))

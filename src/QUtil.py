@@ -2,7 +2,7 @@ from qiskit import Aer, execute, transpile, transpiler, QuantumCircuit
 from pandas import DataFrame
 from MachineID import MachineDict
 from statistics import mean
-import Eval_Metrics as EM
+import EvalMetrics as EM
 import datetime
 
 #Mockup backends
@@ -110,16 +110,16 @@ def simCircuit(qc, backend):
     noisy_result = execute(qc, backend=backend,
                            max_parallel_threads=MAX_JOBS).result()
 
-    PST = EM.Compute_PST(correct_answer=ideal_result.get_counts(
+    PST = EM.computePST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
 
-    TVD = EM.Compute_TVD(dict_ideal=ideal_result.get_counts(
+    TVD = EM.computeTVD(dict_ideal=ideal_result.get_counts(
     ), dict_in=noisy_result.get_counts())
 
-    Entropy = EM.Compute_Entropy(dict_in=noisy_result.get_counts())
+    Entropy = EM.computeEntropy(dict_in=noisy_result.get_counts())
 
-    L2 = EM.Compute_L2(noisy_result.get_counts(), ideal_result.get_counts())
-    Hellinger = EM.Compute_Hellinger(
+    L2 = EM.computeL2(noisy_result.get_counts(), ideal_result.get_counts())
+    Hellinger = EM.computeHellinger(
         noisy_result.get_counts(), ideal_result.get_counts())
 
     Fitness = EM.fitness(PST, TVD, Entropy, swapCount, Hellinger, L2)

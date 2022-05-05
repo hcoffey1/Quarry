@@ -3,7 +3,7 @@
 #https://github.com/SupertechLabs/SupermarQ
 import supermarq
 import sys
-from Q_Util import getTS
+from QUtil import getTS
 
 OUT_DIR: str = "./qasm/SupermarQ/"
 

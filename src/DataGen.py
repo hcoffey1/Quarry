@@ -3,10 +3,9 @@
 from collections import defaultdict
 from statistics import mean
 from qiskit import QuantumCircuit, transpile
-from Q_Util import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS, getV1Input
+from QUtil import simCircuit, getFakeBackends, getGateCounts, getAverageDegree, getGlobalBasisGates, getTS
 from MachineID import MachineDict
 from pandas import DataFrame
-from Eval_Metrics import get_ESP
 from qiskit.providers.aer.noise import NoiseModel
 
 import networkx
@@ -92,7 +91,6 @@ def createDataSet(directory, outputFile):
 
         for be in backends:
             e = genDataEntry(qc, be)
-            print(getV1Input(qc, be))
             if e != None:
                 entries.append(e)
 

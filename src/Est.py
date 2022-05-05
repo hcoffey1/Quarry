@@ -5,9 +5,9 @@ import os
 from os.path import exists
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile
-import Eval_Metrics as EM
+import EvalMetrics as EM
 
-from Q_Util import simCircuit, getFakeBackends, MAX_JOBS
+from QUtil import simCircuit, getFakeBackends, MAX_JOBS
 
 
 def evalCircuitSim(resultDict, qc, backend):
@@ -35,7 +35,7 @@ def evalCircuitESP(resultDict, qc, backend):
     unroll_qc = transpile(qc, basis_gates=basisGates,
                           optimization_level=0, backend=backend)
 
-    esp = EM.get_ESP(unroll_qc, NoiseModel.from_backend(backend))
+    esp = EM.getESP(unroll_qc, NoiseModel.from_backend(backend))
     resultDict[qc.name].append([backendName, esp])
 
 
@@ -50,16 +50,16 @@ def simCircuitIBMQ(resultDict, qc, backend):
     noisy_result = execute(qc, backend=Aer.get_backend(
         'qasm_simulator'), noise_model=nm, max_parallel_threads=MAX_JOBS).result()
 
-    PST = EM.Compute_PST(correct_answer=ideal_result.get_counts(
+    PST = EM.computePST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
 
-    TVD = EM.Compute_TVD(dict_ideal=ideal_result.get_counts(
+    TVD = EM.computeTVD(dict_ideal=ideal_result.get_counts(
     ), dict_in=noisy_result.get_counts())
 
-    IST = EM.Compute_IST(correct_answer=ideal_result.get_counts(
+    IST = EM.computeIST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())
 
-    Entropy = EM.Compute_Entropy(dict_in=noisy_result.get_counts())
+    Entropy = EM.computeEntropy(dict_in=noisy_result.get_counts())
 
     if qc.name not in resultDict:
         resultDict[qc.name] = {}
