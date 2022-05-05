@@ -19,7 +19,7 @@ from os.path import isfile, join
 
 out_columns = ['PST', 'TVD', 'Entropy', 'Swaps']
 dataset_path = "../dataSets_V1/dataSets_Noise"
-checkpoint_path = "../models_V1/checkpoint"
+checkpoint_path = "../models_V1/checkpoint_{}"
 scaler_path = "../models_V1/scaler.save"
 
 
@@ -44,16 +44,19 @@ def create_model(input_size, output_size):
     
     return model
 
-def queryModel(csv):
+def queryModel(csv, out_column):
     """Load in v1 model and make prediction"""
-    
+    if out_column not in out_columns:
+        # Raise error?
+        return None
+
     df = pd.read_csv(csv)
     min_max_scaler = joblib.load(scaler_path)  
     X = df.drop(columns=out_columns)
     X_scale = min_max_scaler.transform(X)
    
     model = create_model(len(X.columns), 1)
-    model.load_weights(checkpoint_path)
+    model.load_weights(checkpoint_path.format(out_column))
 
     return model(X_scale)
 
@@ -81,23 +84,24 @@ def main():
         X_val_and_test, Y_val_and_test, test_size=0.5)
 
     # Baseline model
-    Y = Y[['TVD']]
-    Y_train = Y_train[['TVD']]
-    Y_test = Y_test[['TVD']]
-    Y_val = Y_val[['TVD']]
+    for out_column in out_columns:
+        Y_out = Y[[out_column]]
+        Y_train_out = Y_train[[out_column]]
+        Y_test_out = Y_test[[out_column]]
+        Y_val_out = Y_val[[out_column]]
 
-    model = create_model(len(X.columns), 1)
+        model = create_model(len(X.columns), 1)
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.005, decay=5e-4)
-    model.compile(optimizer=optimizer,
-                  loss='mean_absolute_error',
-                  metrics=['MSE'])
+        optimizer = tf.keras.optimizers.Adam(learning_rate=0.005, decay=5e-4)
+        model.compile(optimizer=optimizer,
+                      loss='mean_absolute_error',
+                      metrics=['MSE'])
 
-    hist = model.fit(X_train, Y_train,
-                     batch_size=32, epochs=200,
-                     validation_data=(X_val, Y_val))
+        hist = model.fit(X_train, Y_train_out,
+                         batch_size=32, epochs=200,
+                         validation_data=(X_val, Y_val_out))
 
-    model.save_weights(checkpoint_path)
+        model.save_weights(checkpoint_path.format(out_column))
 
     # print(model(X_test[0:10]).numpy(), Y_test[0:10])
 
