@@ -113,10 +113,10 @@ def main():
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
-    #ts = getTS()
-    #directory = "./qasm/SWAP_Benchmarks/"
-    #outFile = './dataSets_SWAP/' + ts + '_data.csv'
-    #createDataSet(directory, outFile)
+    ts = QUtil.getTS()
+    directory = "./qasm/SupermarQ/"
+    outFile = './dataSets_V2/dataSets_SupermarQ/' + ts + '_data.csv'
+    createDataSet(directory, outFile)
 
 
 if __name__ == "__main__":
