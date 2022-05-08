@@ -214,14 +214,9 @@ def getGateCounts(qc, basisGates):
 
     return gateCounts
 
-
-def simCircuit(qc, backend):
-    '''Run circuit on simulated backend and collect result metrics'''
-
-    backendName = backend.configuration().backend_name
+def getSwapCount(qc, backend):
+    '''Get count of SWAP operations added for circuit on given backend.'''
     basisGates = backend.configuration().basis_gates
-    print(backendName)
-
     if "swap" not in basisGates:
         basisGates = basisGates + ["swap"]
 
@@ -231,9 +226,16 @@ def simCircuit(qc, backend):
     except transpiler.exceptions.TranspilerError:
         return None
 
-    outDict = {}
+    return getGateCounts(swap_qc, basisGates)['swap']
 
-    outDict["Swaps"] = getGateCounts(swap_qc, basisGates)['swap']
+def simCircuit(qc, backend):
+    '''Run circuit on simulated backend and collect result metrics'''
+
+    backendName = backend.configuration().backend_name
+    print(backendName)
+
+    outDict = {}
+    outDict["Swaps"] = getSwapCount(qc, backend)
 
     ideal_result = execute(
         qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()

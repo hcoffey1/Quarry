@@ -12,7 +12,7 @@ import QUtil
 
 import PredictorV1
 import PredictorV2
-
+import SwapPredictor
 
 def evalCircuitSim(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
@@ -69,6 +69,18 @@ def evalCircuitPredictV2(resultDict, qc, backend):
         outDict[output] = float(PredictorV2.queryModel(args, output)[0][0])
     outDict["Fitness"] = EM.fitness(outDict["PST"], outDict["TVD"], outDict["Entropy"], outDict["Swaps"], 1, 1)
     resultDict[qc.name].append([backendName, outDict])
+
+def evalSwapPredictor(resultDict, qc, backend):
+    backendName = backend.configuration().backend_name
+
+    if qc.name not in resultDict:
+        resultDict[qc.name] = []
+
+    args = QUtil.getV2Input(qc, backend)
+
+    predSwaps = int(SwapPredictor.queryModel(args)[0][0])
+    actSwaps = QUtil.getSwapCount(qc, backend)
+    resultDict[qc.name].append([backendName, predSwaps, actSwaps])
 
 def simCircuitIBMQ(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics, TODO: Update this to work with new framework'''
@@ -129,6 +141,37 @@ def printResultsESP(resultDict, execTime):
             ESP = resultDict[file][i][1]
             print("{:20}{:<10.3f}".format(
                 backend, ESP))
+
+def printResultsSwap(resultDict, execTime):
+    '''Prints metrics per backend on each circuit'''
+
+    header = [
+        ("Backend Name", 20),
+        ("Predicted Swaps", 20),
+        ("Actual Swaps", 20)
+    ]
+
+    def printHeader(header):
+        for h in header:
+            print("{h:{field_size}}".format(h=h[0], field_size=h[1]), end='')
+        print('')
+    
+    for k in resultDict.keys():
+        resultDict[k] = sorted(
+            resultDict[k], key=lambda i: i[1], reverse=True)
+
+    for file in resultDict.keys():
+        print("{} {:.6f}(s) {}".format(
+            file, execTime/(10**9), '++++++++++++++'))
+        printHeader(header)
+
+        for i in range(len(resultDict[file])):
+            backend = resultDict[file][i][0]
+            predSwaps = resultDict[file][i][1]
+            actSwaps = resultDict[file][i][2]
+            print("{:20}{:<20}{:<20}".format(
+                backend, predSwaps, actSwaps))
+
 
 
 def printResults(resultDict, execTime):
@@ -225,18 +268,20 @@ def main():
         backends = QUtil.getFakeBackends(qc, n)
 
     #Simulation
-    query(qc, backends, evalCircuitSim, printResults)
+    #query(qc, backends, evalCircuitSim, printResults)
 
-    #ESP Estimate
-    query(qc, backends, evalCircuitESP, printResultsESP)
+    ##ESP Estimate
+    #query(qc, backends, evalCircuitESP, printResultsESP)
 
-    #ML Models 
-    PredictorV1.load_models()
-    query(qc, backends, evalCircuitPredictV1, printResults)
+    ##ML Models 
+    #PredictorV1.load_models()
+    #query(qc, backends, evalCircuitPredictV1, printResults)
     
-    PredictorV2.load_models()
-    query(qc, backends, evalCircuitPredictV2, printResults)
+    #PredictorV2.load_models()
+    #query(qc, backends, evalCircuitPredictV2, printResults)
 
+    SwapPredictor.load()
+    query(qc, backends, evalSwapPredictor, printResultsSwap)
 
 if __name__ == "__main__":
     main()
