@@ -256,11 +256,6 @@ def getGateCounts(qc, basisGates):
     gateCounts["measure"] = 0
 
     for instruction, qargs, cargs in qc._data:
-        if len(qargs) > 1:
-            qb = ((qargs[0]._index), (qargs[1]._index))
-        else:
-            qb = (qargs[0]._index, )
-
         if instruction.name in ignoredInstructions:
             continue
 

@@ -4,7 +4,6 @@ from qiskit import QuantumCircuit
 from MachineID import MachineDict
 from pandas import DataFrame
 import pandas as pd
-from qiskit.providers.aer.noise import NoiseModel
 import QUtil
 
 import os
@@ -17,14 +16,18 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 import qasm.QASMBench.metrics.OpenQASMetric as QB
 
+
 def genSwapDataEntry(qc, backend) -> DataFrame:
     try:
         dataEntry = QUtil.getV2Input(qc, backend)
-        dataEntry['Swaps'] = QUtil.getSwapCount(qc, backend) 
+        dataEntry['Swaps'] = QUtil.getSwapCount(qc, backend)
+
+    #TODO: Investigate what errors are occuring and resolve them so we can get more data entries
     except:
         print("genSwapDataEntry failed, returning None...")
-        return None 
+        return None
     return dataEntry
+
 
 def genDataEntry(qc, backend) -> DataFrame:
     dataEntry = QUtil.getV2Input(qc, backend)
@@ -32,7 +35,7 @@ def genDataEntry(qc, backend) -> DataFrame:
     outEntries = QUtil.simCircuit(qc, backend)
 
     if outEntries == None:
-        return None 
+        return None
 
     #Output Metrics
     dataEntry['PST'] = outEntries['PST']
@@ -66,11 +69,13 @@ def createDataSet(directory, outputFile) -> None:
 
     df.to_csv(outputFile, index=False)
 
+
 def runNoise() -> None:
     ts = QUtil.getTS()
     directory = "./qasm/Noise_Benchmarks/"
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
+
 
 def runSupermarQ() -> None:
     ts = QUtil.getTS()
@@ -78,10 +83,11 @@ def runSupermarQ() -> None:
     outFile = './dataSets_V2/dataSets_SupermarQ/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
+
 def getListOfFiles(dirName):
     #https://thispointer.com/python-how-to-get-list-of-files-in-directory-and-sub-directories/
-    # create a list of file and sub directories 
-    # names in the given directory 
+    # create a list of file and sub directories
+    # names in the given directory
 
     listOfFile = os.listdir(dirName)
     allFiles = list()
@@ -90,13 +96,14 @@ def getListOfFiles(dirName):
     for entry in listOfFile:
         # Create full path
         fullPath = os.path.join(dirName, entry)
-        # If entry is a directory then get the list of files in this directory 
+        # If entry is a directory then get the list of files in this directory
         if os.path.isdir(fullPath):
             allFiles = allFiles + getListOfFiles(fullPath)
         elif entry.endswith('.qasm'):
             allFiles.append(fullPath)
-            
+
     return allFiles
+
 
 def genSwapData(directory) -> None:
     ts = QUtil.getTS()
@@ -130,12 +137,14 @@ def genSwapData(directory) -> None:
 
     df.to_csv(outFile, index=False)
 
+
 def main():
     QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
     #runNoise()
     #runSupermarQ()
     genSwapData("./qasm/QASMBench/")
+
 
 if __name__ == "__main__":
 	main()

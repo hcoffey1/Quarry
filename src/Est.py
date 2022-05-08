@@ -1,4 +1,3 @@
-from unittest import result
 from qiskit import QuantumCircuit, Aer, execute, IBMQ
 import sys
 import time

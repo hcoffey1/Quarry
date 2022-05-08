@@ -4,7 +4,6 @@
 import tensorflow as tf
 from sklearn import preprocessing
 from keras.models import Sequential, save_model, load_model
-#from keras.utils import plot_model
 from keras.layers import Dense, BatchNormalization
 from sklearn.model_selection import train_test_split
 from keras.activations import sigmoid

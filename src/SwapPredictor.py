@@ -1,7 +1,6 @@
 
 
 # TensorFlow and tf.keras
-from operator import le
 import tensorflow as tf
 from sklearn import preprocessing
 from keras.models import Sequential, save_model, load_model
