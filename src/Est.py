@@ -15,28 +15,28 @@ import SwapPredictor
 
 def evalCircuitSim(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics'''
-
+    optimizationLevel = 0
     backendName = backend.configuration().backend_name
 
     if qc.name not in resultDict:
         resultDict[qc.name] = []
 
     print(backendName, backend.configuration().n_qubits)
-    out = QUtil.simCircuit(qc, backend)
+    out = QUtil.simCircuit(qc, backend, optimizationLevel)
     if out != None:
-        resultDict[qc.name].append([backendName, QUtil.simCircuit(qc, backend)])
+        resultDict[qc.name].append([backendName, out])
 
 
 def evalCircuitESP(resultDict, qc, backend):
     '''Estimate circuit fidelity via ESP'''
-
+    optimizationLevel = 0
     backendName = backend.configuration().backend_name
 
     if qc.name not in resultDict:
         resultDict[qc.name] = []
 
     print(backendName, backend.configuration().n_qubits)
-    unroll_qc = transpile(qc, optimization_level=0, backend=backend)
+    unroll_qc = transpile(qc, optimization_level=optimizationLevel, backend=backend)
 
     esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
     resultDict[qc.name].append([backendName, esp])
@@ -70,6 +70,7 @@ def evalCircuitPredictV2(resultDict, qc, backend):
     resultDict[qc.name].append([backendName, outDict])
 
 def evalSwapPredictor(resultDict, qc, backend):
+    optimizationLevel = 3
     backendName = backend.configuration().backend_name
 
     if qc.name not in resultDict:
@@ -78,7 +79,7 @@ def evalSwapPredictor(resultDict, qc, backend):
     args = QUtil.getV2Input(qc, backend)
 
     predSwaps = int(SwapPredictor.queryModel(args)[0][0])
-    actSwaps = QUtil.getSwapCount(qc, backend)
+    actSwaps = QUtil.getSwapCount(qc, backend, optimizationLevel)
     resultDict[qc.name].append([backendName, predSwaps, actSwaps])
 
 def simCircuitIBMQ(resultDict, qc, backend):

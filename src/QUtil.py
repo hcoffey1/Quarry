@@ -268,7 +268,7 @@ def getGateCounts(qc, basisGates):
     return gateCounts
 
 
-def getSwapCount(qc, backend):
+def getSwapCount(qc, backend, optimizationLevel):
     '''Get count of SWAP operations added for circuit on given backend.'''
     basisGates = backend.configuration().basis_gates
     if "swap" not in basisGates:
@@ -276,26 +276,26 @@ def getSwapCount(qc, backend):
 
     try:
         swap_qc = transpile(qc, basis_gates=basisGates,
-                            optimization_level=0, backend=backend)
+                            optimization_level=optimizationLevel, backend=backend)
     except transpiler.exceptions.TranspilerError:
         return None
 
     return getGateCounts(swap_qc, basisGates)['swap']
 
 
-def simCircuit(qc, backend):
+def simCircuit(qc, backend, optimizationLevel):
     '''Run circuit on simulated backend and collect result metrics'''
 
     backendName = backend.configuration().backend_name
     print(backendName)
 
     outDict = {}
-    outDict["Swaps"] = getSwapCount(qc, backend)
+    outDict["Swaps"] = getSwapCount(qc, backend, optimizationLevel)
 
     ideal_result = execute(
         qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()
     noisy_result = execute(qc, backend=backend,
-                           max_parallel_threads=MAX_JOBS).result()
+                           max_parallel_threads=MAX_JOBS, optimization_level=optimizationLevel).result()
 
     outDict["PST"] = EM.computePST(correct_answer=ideal_result.get_counts(
     ).keys(), dict_in=noisy_result.get_counts())

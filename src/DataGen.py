@@ -18,9 +18,10 @@ import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 
 def genSwapDataEntry(qc, backend) -> DataFrame:
+    optimizationLevel = 3
     try:
         dataEntry = QUtil.getV2Input(qc, backend)
-        dataEntry['Swaps'] = QUtil.getSwapCount(qc, backend)
+        dataEntry['Swaps'] = QUtil.getSwapCount(qc, backend, optimizationLevel)
 
     #TODO: Investigate what errors are occuring and resolve them so we can get more data entries
     except:
@@ -30,9 +31,9 @@ def genSwapDataEntry(qc, backend) -> DataFrame:
 
 
 def genDataEntry(qc, backend) -> DataFrame:
+    optimizationLevel = 0
     dataEntry = QUtil.getV2Input(qc, backend)
-
-    outEntries = QUtil.simCircuit(qc, backend)
+    outEntries = QUtil.simCircuit(qc, backend, optimizationLevel)
 
     if outEntries == None:
         return None
