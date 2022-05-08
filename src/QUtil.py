@@ -1,3 +1,4 @@
+from typing import Dict
 from numpy import average
 from qiskit import Aer, execute, transpile, transpiler, QuantumCircuit
 from qiskit.providers.aer.noise import NoiseModel
@@ -27,7 +28,7 @@ MAX_JOBS = 24
 GLOBAL_BASIS_GATES = None
 
 
-def drawWeightedGraph(G):
+def drawWeightedGraph(G: networkx.Graph) -> None:
     """Visualize weighted Networkx graph"""
     pos = networkx.spring_layout(G)
     networkx.draw(G, pos, with_labels=True)
@@ -35,10 +36,12 @@ def drawWeightedGraph(G):
     networkx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
     fig = plt.gcf()
     fig.suptitle(G.name)
-    plt.show()
+
+    fileName = (G.name.split('.')[0])
+    plt.savefig('./img/cxgraph/{}.png'.format(fileName))
 
 
-def getCxGraph(qc):
+def getCxGraph(qc: QuantumCircuit) -> networkx.Graph:
     """Nodes are Qubits, Edges are CX, Weights are Qubit number distances"""
     G = networkx.Graph()
     G.name = qc.name
@@ -49,7 +52,7 @@ def getCxGraph(qc):
     return G
 
 
-def getGraphMetrics(G, label):
+def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
     """Calculate metrics from Networkx graph"""
     output = {}
     output["{}GraphDensity".format(label)] = networkx.density(G)
@@ -64,9 +67,10 @@ def getGraphMetrics(G, label):
     return output
 
 
-def getCxGraphMetrics(G: networkx.Graph):
+def getCxGraphMetrics(G: networkx.Graph) -> dict:
     """Calculate graph metrics and weight metrics"""
     output = getGraphMetrics(G, 'CX')
+    output['CXAverageDegree'] = getAverageDegree(G)
 
     weights = []
     for e in G.edges:
