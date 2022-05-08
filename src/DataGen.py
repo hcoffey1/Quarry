@@ -18,10 +18,13 @@ import qasm.QASMBench.metrics.OpenQASMetric as QB
 
 
 def genSwapDataEntry(qc, backend) -> DataFrame:
-    optimizationLevel = 3
+    optimizationLevel = 2
     try:
         dataEntry = QUtil.getV2Input(qc, backend)
-        dataEntry['Swaps'] = QUtil.getSwapCount(qc, backend, optimizationLevel)
+        swapCount = QUtil.getSwapCount(qc, backend, optimizationLevel)
+        if swapCount == None:
+            return None
+        dataEntry['Swaps'] = swapCount
 
     #TODO: Investigate what errors are occuring and resolve them so we can get more data entries
     except:
@@ -117,7 +120,7 @@ def genSwapData(directory) -> None:
         print("Running", inputFile, "...({}/{})".format(i, len(inputs)))
 
         #Read in given circuit
-        try: 
+        try:
             qc = QuantumCircuit.from_qasm_file(inputFile)
             qc.name = inputFile
 

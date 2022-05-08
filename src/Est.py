@@ -70,17 +70,32 @@ def evalCircuitPredictV2(resultDict, qc, backend):
     resultDict[qc.name].append([backendName, outDict])
 
 def evalSwapPredictor(resultDict, qc, backend):
-    optimizationLevel = 3
-    backendName = backend.configuration().backend_name
+    backendName = backend.configuration().backend_name 
 
     if qc.name not in resultDict:
-        resultDict[qc.name] = []
+        resultDict[qc.name] = {}
+
+    if backendName not in resultDict[qc.name]:
+        resultDict[qc.name][backendName] = {}
 
     args = QUtil.getV2Input(qc, backend)
 
     predSwaps = int(SwapPredictor.queryModel(args)[0][0])
+    resultDict[qc.name][backendName]['PredSwaps'] = predSwaps
+
+def evalSwapCompiler(resultDict, qc, backend):
+    backendName = backend.configuration().backend_name 
+
+    optimizationLevel = 2
+
+    if qc.name not in resultDict:
+        resultDict[qc.name] = {}
+    
+    if backendName not in resultDict[qc.name]:
+        resultDict[qc.name][backendName] = {}
+
     actSwaps = QUtil.getSwapCount(qc, backend, optimizationLevel)
-    resultDict[qc.name].append([backendName, predSwaps, actSwaps])
+    resultDict[qc.name][backendName]['ActSwaps'] = actSwaps
 
 def simCircuitIBMQ(resultDict, qc, backend):
     '''Run circuit on simulated backend and collect result metrics, TODO: Update this to work with new framework'''
@@ -142,7 +157,7 @@ def printResultsESP(resultDict, execTime):
             print("{:20}{:<10.3f}".format(
                 backend, ESP))
 
-def printResultsSwap(resultDict, execTime):
+def printResultsSwap(resultDict, execTimePred, execTimeAct):
     '''Prints metrics per backend on each circuit'''
 
     header = [
@@ -155,23 +170,34 @@ def printResultsSwap(resultDict, execTime):
         for h in header:
             print("{h:{field_size}}".format(h=h[0], field_size=h[1]), end='')
         print('')
-    
-    for k in resultDict.keys():
-        resultDict[k] = sorted(
-            resultDict[k], key=lambda i: i[1], reverse=False)
+
+    #Create list of circuit/backend/swap counts
+    sortedKeys = []
+    for i in resultDict.keys():
+        for j in resultDict[i].keys():
+            sortedKeys.append([i, j, resultDict[i][j]['PredSwaps'], resultDict[i][j]['ActSwaps']])
+
+    #Sort list on predicted counts
+    sortedKeys = sorted(
+        sortedKeys, key=lambda i: i[2], reverse=False)
+
+    #Organize by circuit
+    sortedKeysDict = {}
+    for file in resultDict.keys():
+        sortedKeysDict[file] = list(filter(lambda i: i[0] == file, sortedKeys))
+        sortedKeysDict[file] = [i[1] for i in sortedKeys] 
 
     for file in resultDict.keys():
-        print("{} {:.6f}(s) {}".format(
-            file, execTime/(10**9), '++++++++++++++'))
+        print("{} PredTime: {:.6f}(s) ActTime: {:.6f}(s) {}".format(
+            file, execTimePred/(10**9), execTimeAct/(10**9), '++++++++++++++'))
         printHeader(header)
 
-        for i in range(len(resultDict[file])):
-            backend = resultDict[file][i][0]
-            predSwaps = resultDict[file][i][1]
-            actSwaps = resultDict[file][i][2]
+        for i in sortedKeysDict[file]:
+            backend = i
+            predSwaps = resultDict[file][i]['PredSwaps']
+            actSwaps = resultDict[file][i]['ActSwaps']
             print("{:20}{:<20}{:<20}".format(
                 backend, predSwaps, actSwaps))
-
 
 
 def printResults(resultDict, execTime):
@@ -219,7 +245,8 @@ def printResults(resultDict, execTime):
                 print("{:20}{:<10.3f}{:<10.3f}{:<10.3f}{:<10}{:<10.3f}{:<10.3f}{:<10.3f}".format(
                     backend, PST, TVD, Entropy, swapCount, L2, Hellinger, Fitness))
 
-def query(qc, backends, queryFunc, printFunc):
+
+def query(qc, backends, queryFunc):
     #Simulate circuit on each backend
     timeBegin = time.time_ns()
 
@@ -231,8 +258,8 @@ def query(qc, backends, queryFunc, printFunc):
     #Time taken to simulate
     execTime = timeEnd - timeBegin
 
-    #Output
-    printFunc(resultDictSim, execTime)
+    return resultDictSim, execTime
+
 
 def main():
     if len(sys.argv) == 1:
@@ -268,20 +295,35 @@ def main():
         backends = QUtil.getFakeBackends(qc, n)
 
     #Simulation
-    #query(qc, backends, evalCircuitSim, printResults)
+    #resultDict, execTime = query(qc, backends, evalCircuitSim, printResults)
+    #printResults(resultDict, execTime)
 
-    ##ESP Estimate
-    #query(qc, backends, evalCircuitESP, printResultsESP)
+    #ESP Estimate
+    #resultDict, execTime = query(qc, backends, evalCircuitESP)
+    #printResultsESP(resultDict, execTime)
 
-    ##ML Models 
+    #ML Models
     #PredictorV1.load_models()
-    #query(qc, backends, evalCircuitPredictV1, printResults)
-    
+    #resultDict, execTime = query(qc, backends, evalCircuitPredictV1)
+    #printResults(resultDict, execTime)
+
     #PredictorV2.load_models()
-    #query(qc, backends, evalCircuitPredictV2, printResults)
+    #resultDict, execTime = query(qc, backends, evalCircuitPredictV2)
+    #printResults(resultDict, execTime)
 
     SwapPredictor.load()
-    query(qc, backends, evalSwapPredictor, printResultsSwap)
+    resultDictSwapPred, execTimeSwapPred = query(
+        qc, backends, evalSwapPredictor)
+    resultDictSwapAct, execTimeSwapAct = query(qc, backends, evalSwapCompiler)
+
+    #Merge predicted and actual dicts
+    for i in resultDictSwapPred.keys():
+        for j in resultDictSwapPred[i].keys():
+            resultDictSwapPred[i][j] = {
+                **(resultDictSwapPred[i][j]), **(resultDictSwapAct[i][j])}
+
+    printResultsSwap(resultDictSwapPred, execTimeSwapPred, execTimeSwapAct)
+
 
 if __name__ == "__main__":
     main()
