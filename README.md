@@ -1,4 +1,4 @@
-# CS 758 Class Project
+# Quarry: Providing fast quantum circuit fidelity estimation.
 
 ## Files
 
@@ -22,3 +22,23 @@ Misc. functions for use in other files.
 
 ### `Eval_Metrics.py`
 Methods for calculating fidelity metrics.
+
+### Notes from talk
+
+* Is ESP correlated with other metrics?
+  - Spearman's rank correlation coefficient
+  - Are ML models actually worth it compared to ESP?
+  - Use OpenMP to multithread computation.
+  
+* Focus on developing model for swaps
+  - Compare performance against compiler.
+  - Train on heavily optimized circuits, save computation estimating in the future
+
+* Design model for predicting fitness instead of other metrics?
+  - Could benefit prototype implementation. Only need to train 1 model instead of all the component metric models.
+
+* Timeline visualization of fitness
+
+* Heatmap of latency for methods (QC size, QM size) -> Latency
+
+* Heatmaps of (Metric1, Metric2) -> ESP ?
