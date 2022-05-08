@@ -208,7 +208,7 @@ def getGateCounts(qc, basisGates):
         gate = l.split()[0].split('(')[0]
         if gate not in gateCounts:
             print("Unhandled instruction: ", l)
-            exit(1)
+            raise RuntimeError
 
         gateCounts[gate] += 1
 
