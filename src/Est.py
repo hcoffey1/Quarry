@@ -158,7 +158,7 @@ def printResultsSwap(resultDict, execTime):
     
     for k in resultDict.keys():
         resultDict[k] = sorted(
-            resultDict[k], key=lambda i: i[1], reverse=True)
+            resultDict[k], key=lambda i: i[1], reverse=False)
 
     for file in resultDict.keys():
         print("{} {:.6f}(s) {}".format(

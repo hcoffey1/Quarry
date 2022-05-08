@@ -13,14 +13,14 @@ import joblib
 
 # Commonly used modules
 import pandas as pd
+import numpy as np
 
 from os import listdir
 from os.path import isfile, join
 
-out_columns = {'PST': None, 'TVD': None, 'Entropy': None,
-               'Swaps': None, 'L2': None, 'Hellinger': None}
+out_columns = {'Swaps': None}
 out_columns_sig = ['PST', 'TVD', 'L2']
-dataset_path = "./dataSets_V2/dataSets_Noise"
+dataset_path = "./dataSets_SWAP/"
 #img_path = "./models_V2/img/checkpoint_{}.png"
 checkpoint_path = "./models_V2_swap/checkpoint_{}"
 scaler_path = "./models_V2_swap/scaler.save"
@@ -43,16 +43,16 @@ def create_swap_model(input_size, output_size):
     relu = tf.keras.layers.ReLU()
 
     model = Sequential([
-        Dense(512, activation=leaky_relu, input_shape=(input_size,)),
+        Dense(512, activation=relu, input_shape=(input_size,)),
         BatchNormalization(),
 
-        Dense(256, activation=leaky_relu),
+        Dense(256, activation=relu),
         BatchNormalization(),
 
-        Dense(256, activation=leaky_relu),
+        Dense(256, activation=relu),
         BatchNormalization(),
 
-        Dense(128, activation=leaky_relu),
+        Dense(128, activation=relu),
         BatchNormalization(),
 
         Dense(output_size, activation=relu),
@@ -67,6 +67,9 @@ def create_model_sigmoid(input_size, output_size):
 
     model = Sequential([
         Dense(512, activation=relu, input_shape=(input_size,)),
+        BatchNormalization(),
+
+        Dense(256, activation=relu),
         BatchNormalization(),
 
         Dense(256, activation=relu),
@@ -101,6 +104,8 @@ def main():
     dfs = [pd.read_csv(f) for f in files]
     df = pd.concat(dfs)
 
+    df = df.replace([np.inf, -np.inf, np.nan], 0)
+
     X = df.drop(columns=out_columns)
     Y = df[out_columns]
 
@@ -115,8 +120,6 @@ def main():
     X_val, X_test, Y_val, Y_test = train_test_split(
         X_val_and_test, Y_val_and_test, test_size=0.5)
 
-    # Baseline model
- #   for out_column in out_columns:
     out_column = "Swaps"
     Y_out = Y[[out_column]]
     Y_train_out = Y_train[[out_column]]
@@ -131,7 +134,7 @@ def main():
             metrics=['MSE'])
 
     hist = model.fit(X_train, Y_train_out,
-                batch_size=32, epochs=500,
+                batch_size=32, epochs=1000,
                 validation_data=(X_val, Y_val_out))
 
     save_model(model=model, filepath=checkpoint_path.format(out_column))
