@@ -22,6 +22,7 @@ def genSwapDataEntry(qc, backend) -> DataFrame:
         dataEntry = QUtil.getV2Input(qc, backend)
         dataEntry['Swaps'] = QUtil.getSwapCount(qc, backend) 
     except:
+        print("genSwapDataEntry failed, returning None...")
         return None 
     return dataEntry
 
@@ -121,7 +122,8 @@ def genSwapData(directory) -> None:
                     if not e.empty:
                         entries.append(e)
         except:
-            pass
+            print("Circuit failed to generate data.")
+
         i += 1
 
     df = pd.concat(entries)

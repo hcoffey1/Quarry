@@ -61,8 +61,13 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
     output["{}AvgNeighborDegree".format(label)] = mean(
         list(networkx.average_neighbor_degree(G).values()))
     output["{}AvgClustering".format(label)] = networkx.average_clustering(G)
-    output["{}AvgShortestPath".format(
-        label)] = networkx.average_shortest_path_length(G)
+
+    if label != "CX":
+        output["{}AvgShortestPath".format(
+            label)] = networkx.average_shortest_path_length(G)
+    else:
+        output["{}AvgShortestPath".format(
+            label)] = 0 
 
     return output
 
@@ -70,7 +75,7 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
 def getCxGraphMetrics(G: networkx.Graph) -> dict:
     """Calculate graph metrics and weight metrics"""
     output = getGraphMetrics(G, 'CX')
-    output['CXAverageDegree'] = getAverageDegree(G)
+    output['CXAverageDegree'] = getAverageDegree(G.edges)
 
     weights = []
     for e in G.edges:
