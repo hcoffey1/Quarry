@@ -84,6 +84,7 @@ def queryModel(X: pd.DataFrame, out_column: str):
         return None
 
     min_max_scaler = joblib.load(scaler_path)
+    X = X[min_max_scaler.feature_names_in_]
     X_scale = min_max_scaler.transform(X)
 
     model = out_columns[out_column]
