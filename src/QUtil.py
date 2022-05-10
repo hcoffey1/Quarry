@@ -301,7 +301,8 @@ def getGateCounts(qc, basisGates):
 
     gateCounts = {}
 
-    ignoredInstructions = ['barrier']
+    #TODO: Standardize collection of gate types we record. Add support for barrier/reset
+    ignoredInstructions = ['barrier', 'reset']
 
     for g in basisGates:
         gateCounts[g] = 0
