@@ -37,50 +37,51 @@ def get_sec(time_str):
         return int(m) * 60 + float(s)
 
 def main():
-    file = sys.argv[1]
-
-    with open(file) as f:
-        lines = f.readlines()
+    files = sys.argv[1:]
 
     data = {}	
-    for l in lines:
-        if "QUARRY LOG HEADER" in l:
-            continue
-        elif "Mode" in l:
-            mode = (l.split(' ')[1]).strip()
-            if mode not in data:
-                data[mode] = {}
-                data[mode]['width'] = []
-                data[mode]['user_time'] = []
-                data[mode]['system_time'] = []
-                data[mode]['wall_clock'] = []
-                data[mode]['peak_rss'] = []
-            continue
+    for file in files:
+        with open(file) as f:
+            lines = f.readlines()
 
-        elif 'QC_Width' in l:
-            width = int(l.split(' ')[1])
-            data[mode]['width'].append(width)
-            continue
+        for l in lines:
+            if "QUARRY LOG HEADER" in l:
+                continue
+            elif "Mode" in l:
+                mode = (l.split(' ')[1]).strip()
+                if mode not in data:
+                    data[mode] = {}
+                    data[mode]['width'] = []
+                    data[mode]['user_time'] = []
+                    data[mode]['system_time'] = []
+                    data[mode]['wall_clock'] = []
+                    data[mode]['peak_rss'] = []
+                continue
 
-        elif 'User time' in l:
-            utime = float(l.split(' ')[3])
-            data[mode]['user_time'].append(utime)
-            continue
+            elif 'QC_Width' in l:
+                width = int(l.split(' ')[1])
+                data[mode]['width'].append(width)
+                continue
 
-        elif 'System time' in l:
-            systime = float(l.split(' ')[3])
-            data[mode]['system_time'].append(systime)
-            continue
+            elif 'User time' in l:
+                utime = float(l.split(' ')[3])
+                data[mode]['user_time'].append(utime)
+                continue
 
-        elif 'wall clock' in l:
-            wctime = get_sec(l.split(' ')[7])
-            data[mode]['wall_clock'].append(wctime)
-            continue
+            elif 'System time' in l:
+                systime = float(l.split(' ')[3])
+                data[mode]['system_time'].append(systime)
+                continue
 
-        elif 'Maximum resident set size' in l:
-            prss = int(l.split(' ')[5])
-            data[mode]['peak_rss'].append(prss)
-            continue
+            elif 'wall clock' in l:
+                wctime = get_sec(l.split(' ')[7])
+                data[mode]['wall_clock'].append(wctime)
+                continue
+
+            elif 'Maximum resident set size' in l:
+                prss = int(l.split(' ')[5])
+                data[mode]['peak_rss'].append(prss)
+                continue
 
     drawWallClockGraph(data)
     drawPeakRSSGraph(data)
