@@ -395,7 +395,6 @@ def main():
         printResultsSwap(resultDictSwapPred, execTimeSwapPred)
 
     elif args.mode.lower() == "swap_compile":
-        SwapPredictor.load()
         resultDictSwapAct, execTimeSwapAct = query(
             qc, backends, evalSwapCompiler)
 
