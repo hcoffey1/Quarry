@@ -210,6 +210,44 @@ def getV2Input(qc: QuantumCircuit, backend) -> DataFrame:
     graph.add_edges_from(coupling_map)
 
     output["Machine"] = MachineDict[name]
+    output["AvgDegree"] = getAverageDegree(coupling_map)
+
+    output = {**output, **(getGraphMetrics(graph, ''))}
+
+    #Circuit Metrics
+    output["NumQubit"] = numQubit
+    output["Depth"] = out_qc.depth()
+
+    QB_metric = QB.QASMetric(out_qc.qasm())
+    output = {**output, **(QB_metric.evaluate_qasm())}
+
+    return DataFrame(output, index=[0])
+
+def getSWAPInput(qc: QuantumCircuit, backend) -> DataFrame:
+    basisGates = backend.configuration().basis_gates
+    coupling_map = backend.configuration().coupling_map
+    numQubit = backend.configuration().n_qubits
+    name = backend.configuration().backend_name
+    noise = NoiseModel.from_backend(backend)
+
+    #Counting gates prior to mapping to topology
+    out_qc = transpile(qc, basis_gates=basisGates, optimization_level=0)
+
+    output = getGateCounts(out_qc, basisGates)
+
+    for gate in GLOBAL_BASIS_GATES:
+        if gate not in output:
+            output[gate] = -1
+
+    #Avg Error Metrics
+    output["measureSuccess"] = getAvgMeasurementSuccess(noise)
+    output = {**output, **(getAvgGateSuccess(noise))}
+
+    #Topology Metrics
+    graph = networkx.DiGraph()
+    graph.add_edges_from(coupling_map)
+
+    output["Machine"] = MachineDict[name]
     output["QCAvgDegree"] = getAverageDegree(coupling_map)
 
     output = {**output, **(getGraphMetrics(graph, 'QC'))}
@@ -268,11 +306,11 @@ def getGateCounts(qc, basisGates):
         if instruction.name in ignoredInstructions:
             continue
 
-        if instruction.name not in gateCounts:
+        if instruction.name.lower() not in gateCounts:
             print("Unhandled instruction: ", instruction.name)
             raise RuntimeError
 
-        gateCounts[instruction.name] += 1
+        gateCounts[instruction.name.lower()] += 1
 
     return gateCounts
 
