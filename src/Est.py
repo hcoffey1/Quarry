@@ -355,11 +355,16 @@ def main():
 
     args = parser.parse_args()
 
+    sys.stderr.write("QUARRY LOG HEADER ==========\n")
+
     backendCount = args.n
     inputFile = args.file
 
     #Transform file to Qiskit circuit and retrieve compatible platforms
     qc, backends = QuarryInit(inputFile, backendCount)
+
+    sys.stderr.write("Mode: {}\n".format(args.mode.lower()))
+    sys.stderr.write("QC_Width: {}\n".format(qc.width()))
 
     #ESP Estimate
     if args.mode.lower() == "esp":
