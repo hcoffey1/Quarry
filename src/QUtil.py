@@ -286,9 +286,6 @@ def getSwapCount(qc, backend, optimizationLevel):
 def simCircuit(qc, backend, optimizationLevel):
     '''Run circuit on simulated backend and collect result metrics'''
 
-    backendName = backend.configuration().backend_name
-    print(backendName)
-
     outDict = {}
     outDict["Swaps"] = getSwapCount(qc, backend, optimizationLevel)
 

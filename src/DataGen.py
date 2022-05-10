@@ -3,6 +3,12 @@
 from qiskit import QuantumCircuit 
 from MachineID import MachineDict
 from pandas import DataFrame
+from qiskit.providers.aer.noise import NoiseModel
+from qiskit import transpile 
+import numpy as np
+
+import matplotlib.pyplot as plt
+
 import pandas as pd
 import QUtil
 
@@ -45,16 +51,40 @@ def genDataEntry(qc, backend) -> DataFrame:
     dataEntry['PST'] = outEntries['PST']
     dataEntry['TVD'] = outEntries['TVD']
     dataEntry['Entropy'] = outEntries['Entropy']
+
     dataEntry['Swaps'] = outEntries['Swaps']
+
     dataEntry['L2'] = outEntries['L2']
     dataEntry['Hellinger'] = outEntries['Hellinger']
 
+    unroll_qc = transpile(qc, optimization_level=optimizationLevel, backend=backend)
+    esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
+    dataEntry['ESP'] = esp 
+
     return dataEntry
 
+def genESPHMDataEntry(qc : QuantumCircuit, backend) -> DataFrame:
+    """Collect circuit depth,width -> ESP"""
+    optimizationLevel = 0
+    dataEntry = {}
+
+    dataEntry['width'] = qc.width()
+    dataEntry['depth'] = qc.depth()
+
+    unroll_qc = transpile(qc, optimization_level=optimizationLevel, backend=backend)
+    esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
+
+    dataEntry['ESP'] = esp 
+
+    return DataFrame(dataEntry, index=[0])
 
 def createDataSet(directory, outputFile) -> None:
     entries = []
-    for inputFile in getListOfFiles(directory):
+    fileList = getListOfFiles(directory)
+    i = 0
+    for inputFile in fileList:
+        if "BV" in inputFile:
+            continue
         print("Running", inputFile, "...")
 
         #Read in given circuit
@@ -63,11 +93,47 @@ def createDataSet(directory, outputFile) -> None:
 
         n = 1000
         backends = QUtil.getFakeBackends(qc, n)
-
+        j = 0
         for be in backends:
+            print("\tRunning", be.configuration().backend_name, "on", inputFile,
+                  "(file: {}/{}, be: {}/{})...".format(i, len(fileList), j, len(backends)))
             e = genDataEntry(qc, be)
-            if not e.empty:
-                entries.append(e)
+            if type(e) == DataFrame:
+                if not e.empty:
+                    entries.append(e)
+            j += 1
+        i += 1
+
+    df = pd.concat(entries)
+
+    df.to_csv(outputFile, index=False)
+
+def createESPHMDataSet(directory, outputFile) -> None:
+    entries = []
+    fileList = getListOfFiles(directory)
+    fileList = list(filter(lambda x: "large" not in x, fileList))
+    i = 0
+    for inputFile in fileList:
+        print("Running", inputFile, "...")
+
+        try:
+            #Read in given circuit
+            qc = QuantumCircuit.from_qasm_file(inputFile)
+            qc.name = inputFile
+
+            n = 1000
+            backends = QUtil.getFakeBackends(qc, n)
+            j = 0
+            for be in backends:
+                print("\tRunning", be.configuration().backend_name, "on", inputFile,
+                    "(file: {}/{}, be: {}/{})...".format(i, len(fileList), j, len(backends)))
+                e = genESPHMDataEntry(qc, be)
+                if not e.empty:
+                    entries.append(e)
+                j += 1
+        except:
+            print("{} failed to produce data.".format(inputFile))
+        i += 1
 
     df = pd.concat(entries)
 
@@ -79,6 +145,12 @@ def runNoise() -> None:
     directory = "./qasm/Noise_Benchmarks/"
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
+
+def runESPHM() -> None:
+    ts = QUtil.getTS()
+    directory = "./qasm/QASMBench/"
+    outFile = './dataSets_ESP/' + ts + '_data.csv'
+    createESPHMDataSet(directory, outFile)
 
 
 def runSupermarQ() -> None:
@@ -141,13 +213,46 @@ def genSwapData(directory) -> None:
 
     df.to_csv(outFile, index=False)
 
+def drawESPDepthVar(dir):
+    files = [os.path.join(dir, f) for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]
+
+    #Read in entries
+    dfs = [pd.read_csv(f) for f in files]
+    df = pd.concat(dfs)
+
+    #Filter out those with ESP == 1
+    #Likely from faulty noise models
+    df = df[df.ESP != 1]
+
+    #Filter very large values out, these have an ESP of nearly 0
+    df = df[df.depth < 700]
+
+    depthdata = (df['depth'])
+
+    xdata = []
+    ydata = []
+    for depth in (set(depthdata)):
+        xdata.append(depth)
+        ydata.append((df[df.depth == depth]['ESP']).var())
+
+    ax = plt.axes()
+    ax.scatter(xdata, ydata)
+
+    ax.set_xlabel("Circuit Depth")
+    ax.set_ylabel("ESP Variance")
+    ax.set_title("Platform ESP Variance vs. Circuit Depth")
+    plt.show()
+
+
 
 def main():
     QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
     #runNoise()
+    #runESPHM()
     #runSupermarQ()
-    genSwapData("./qasm/QASMBench/")
+    #genSwapData("./qasm/QASMBench/")
+    #drawESPDepthVar("./dataSets_ESP")
 
 
 if __name__ == "__main__":
