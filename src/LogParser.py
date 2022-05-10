@@ -9,7 +9,7 @@ def drawNumQubitWallClockGraph(data):
     for key in data.keys():
         ax.scatter(data[key]['num_qubits'], data[key]['wall_clock'], label=key)
 
-    ax.set_ylim(0, 100)
+    #ax.set_ylim(0, 100)
     ax.legend()
     ax.set_xlabel("Circuit Qubit Count")
     ax.set_ylabel("Wall Clock Time")
@@ -37,7 +37,7 @@ def drawCircuitSizeWallClockGraph(data):
     for key in data.keys():
         ax.scatter(data[key]['circuit_size'], data[key]['wall_clock'], label=key)
 
-    ax.set_ylim(0, 100)
+    #ax.set_ylim(0, 100)
     ax.legend()
     ax.set_xlabel("Circuit Size")
     ax.set_ylabel("Wall Clock Time")
