@@ -364,7 +364,7 @@ def main():
     qc, backends = QuarryInit(inputFile, backendCount)
 
     sys.stderr.write("Mode: {}\n".format(args.mode.lower()))
-    sys.stderr.write("QC_Width: {}\n".format(qc.width()))
+    sys.stderr.write("NumQubits: {}\n".format(qc.num_qubits))
 
     #ESP Estimate
     if args.mode.lower() == "esp":

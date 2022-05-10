@@ -8,6 +8,7 @@ def drawWallClockGraph(data):
     for key in data.keys():
         ax.scatter(data[key]['width'], data[key]['wall_clock'], label=key)
 
+    ax.set_ylim(0,100)
     ax.legend()
     ax.set_xlabel("Circuit Width")
     ax.set_ylabel("Wall Clock Time")
@@ -51,16 +52,16 @@ def main():
                 mode = (l.split(' ')[1]).strip()
                 if mode not in data:
                     data[mode] = {}
-                    data[mode]['width'] = []
+                    data[mode]['num_qubits'] = []
                     data[mode]['user_time'] = []
                     data[mode]['system_time'] = []
                     data[mode]['wall_clock'] = []
                     data[mode]['peak_rss'] = []
                 continue
 
-            elif 'QC_Width' in l:
+            elif 'NumQubits' in l:
                 width = int(l.split(' ')[1])
-                data[mode]['width'].append(width)
+                data[mode]['num_qubits'].append(width)
                 continue
 
             elif 'User time' in l:
