@@ -41,7 +41,7 @@ def genSwapDataEntry(qc, backend) -> DataFrame:
 
 def genDataEntry(qc, backend) -> DataFrame:
     optimizationLevel = 0
-    dataEntry = QUtil.getV2Input(qc, backend)
+    dataEntry = QUtil.getSWAPInput(qc, backend)
     outEntries = QUtil.simCircuit(qc, backend, optimizationLevel)
 
     if outEntries == None:
@@ -84,15 +84,16 @@ def createDataSet(directory, outputFile) -> None:
     fileList = getListOfFiles(directory)
     i = 0
     for inputFile in fileList:
-        if "BV" in inputFile:
-            continue
         print("Running", inputFile, "...")
+        if inputFile in QUtil.FAULT_CIRCUITS:
+            print("Faulty circuit, skipping...")
+            continue
 
         #Read in given circuit
         qc = QuantumCircuit.from_qasm_file(inputFile)
         qc.name = inputFile
 
-        n = 1000
+        n = 10 
         backends = QUtil.getFakeBackends(qc, n)
         j = 0
         for be in backends:
@@ -116,6 +117,9 @@ def createESPHMDataSet(directory, outputFile) -> None:
     i = 0
     for inputFile in fileList:
         print("Running", inputFile, "...")
+        if inputFile in QUtil.FAULT_CIRCUITS:
+            print("Faulty circuit, skipping...")
+            continue
 
         try:
             #Read in given circuit
@@ -197,6 +201,9 @@ def genSwapData(directory) -> None:
     inputs = list(filter(lambda x: "large" not in x, inputs))
     for inputFile in inputs:
         print("Running", inputFile, "...({}/{})".format(i, len(inputs)))
+        if inputFile in QUtil.FAULT_CIRCUITS:
+            print("Faulty circuit, skipping...")
+            continue
 
         #Read in given circuit
         try:

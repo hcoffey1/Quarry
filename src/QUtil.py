@@ -26,6 +26,9 @@ import qasm.QASMBench.metrics.OpenQASMetric as QB
 #0: Use all available cores
 MAX_JOBS = 24
 GLOBAL_BASIS_GATES = None
+FAULT_CIRCUITS = ['./qasm/QASMBench/small/ipea_n2/ipea_n2.qasm',
+                  './qasm/QASMBench/small/vqe_uccsd_n4/vqe_uccsd_n4.qasm',
+                  './qasm/QASMBench/small/pea_n5/pea_n5.qasm']
 
 
 def drawWeightedGraph(G: networkx.Graph) -> None:
@@ -62,7 +65,8 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
     #If average neighbor degree list is empty, set mean to 0
     avgNeighborDegreeList = list(networkx.average_neighbor_degree(G).values())
     if len(avgNeighborDegreeList) != 0:
-        output["{}AvgNeighborDegree".format(label)] = mean(avgNeighborDegreeList)
+        output["{}AvgNeighborDegree".format(
+            label)] = mean(avgNeighborDegreeList)
     else:
         output["{}AvgNeighborDegree".format(label)] = 0
 
@@ -229,6 +233,7 @@ def getV2Input(qc: QuantumCircuit, backend) -> DataFrame:
 
     return DataFrame(output, index=[0])
 
+
 def getSWAPInput(qc: QuantumCircuit, backend) -> DataFrame:
     basisGates = backend.configuration().basis_gates
     coupling_map = backend.configuration().coupling_map
@@ -256,8 +261,10 @@ def getSWAPInput(qc: QuantumCircuit, backend) -> DataFrame:
     output["Machine"] = MachineDict[name]
     output["QCAvgDegree"] = getAverageDegree(coupling_map)
 
+    #Machine topology metrics
     output = {**output, **(getGraphMetrics(graph, 'QC'))}
 
+    #CX Graph metrics
     output = {**output, **(getCxGraphMetrics(getCxGraph(qc)))}
 
     #Circuit Metrics
@@ -301,12 +308,13 @@ def getGateCounts(qc, basisGates):
 
     gateCounts = {}
 
-    #TODO: Standardize collection of gate types we record. Add support for barrier/reset
-    ignoredInstructions = ['barrier', 'reset']
+    #TODO: Standardize collection of gate types we record. Add support for barrier
+    ignoredInstructions = ['barrier']
 
     for g in basisGates:
         gateCounts[g] = 0
 
+    gateCounts["reset"] = 0
     gateCounts["measure"] = 0
 
     for instruction, qargs, cargs in qc._data:
