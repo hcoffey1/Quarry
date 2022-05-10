@@ -87,6 +87,7 @@ def createDataSet(directory, outputFile) -> None:
         print("Running", inputFile, "...")
         if inputFile in QUtil.FAULT_CIRCUITS:
             print("Faulty circuit, skipping...")
+            i+=1
             continue
 
         #Read in given circuit

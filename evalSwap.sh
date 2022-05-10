@@ -18,8 +18,6 @@ log=$(date +"%Y-%m-%d_%H-%M-%S").log
 n=10
 for i in `find . -type f -wholename "${1}*.qasm"`; do
     [ -f "$i" ] || break
-    /bin/time --verbose python ./src/Est.py $i simulation --n ${n} 2>> ${log} || exitScript ${i} 'simulation'
-    /bin/time --verbose python ./src/Est.py $i p1 --n ${n} 2>> ${log} || exitScript ${i} 'p1'
-    /bin/time --verbose python ./src/Est.py $i p2 --n ${n} 2>> ${log} || exitScript ${i} 'p2'
-    /bin/time --verbose python ./src/Est.py $i esp --n ${n} 2>> ${log} || exitScript ${i} 'esp'
+    /bin/time --verbose python ./src/Est.py $i swap_compile --n ${n} 2>> ${log} || exitScript ${i} 'swap_compile'
+    /bin/time --verbose python ./src/Est.py $i swap_pred --n ${n} 2>> ${log} || exitScript ${i} 'swap_pred'
 done
