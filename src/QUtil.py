@@ -62,12 +62,16 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
         list(networkx.average_neighbor_degree(G).values()))
     output["{}AvgClustering".format(label)] = networkx.average_clustering(G)
 
+    #CX graph may not be connected.
+    #isConnected() feature not supported for Graph()?
     if label != "CX":
         output["{}AvgShortestPath".format(
             label)] = networkx.average_shortest_path_length(G)
+
+    #Not collecting CX shortest path data for now.
     else:
         output["{}AvgShortestPath".format(
-            label)] = 0 
+            label)] = 0
 
     return output
 
@@ -75,7 +79,12 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
 def getCxGraphMetrics(G: networkx.Graph) -> dict:
     """Calculate graph metrics and weight metrics"""
     output = getGraphMetrics(G, 'CX')
-    output['CXAverageDegree'] = getAverageDegree(G.edges)
+
+    #Single element edge lists have a different data format.
+    if len(G.edges) == 1:
+        output['CXAverageDegree'] = 1
+    else:
+        output['CXAverageDegree'] = getAverageDegree(G.edges)
 
     weights = []
     for e in G.edges:
@@ -268,7 +277,7 @@ def getGateCounts(qc, basisGates):
     return gateCounts
 
 
-def getSwapCount(qc, backend, optimizationLevel):
+def getSwapCount(qc, backend, optimizationLevel) -> int:
     '''Get count of SWAP operations added for circuit on given backend.'''
     basisGates = backend.configuration().basis_gates
     if "swap" not in basisGates:
@@ -287,7 +296,13 @@ def simCircuit(qc, backend, optimizationLevel):
     '''Run circuit on simulated backend and collect result metrics'''
 
     outDict = {}
-    outDict["Swaps"] = getSwapCount(qc, backend, optimizationLevel)
+    swaps = getSwapCount(qc, backend, optimizationLevel)
+
+    #Transpiler threw an error and we couldn't route circuit
+    if swaps == None:
+        return None
+
+    outDict["Swaps"] = swaps
 
     ideal_result = execute(
         qc, backend=Aer.get_backend('qasm_simulator'), max_parallel_threads=MAX_JOBS).result()

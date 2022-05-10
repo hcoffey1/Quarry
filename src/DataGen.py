@@ -78,6 +78,7 @@ def genESPHMDataEntry(qc : QuantumCircuit, backend) -> DataFrame:
 
     return DataFrame(dataEntry, index=[0])
 
+#TODO: Standardize data set creation so we don't have a dozen functions doing this
 def createDataSet(directory, outputFile) -> None:
     entries = []
     fileList = getListOfFiles(directory)
@@ -157,6 +158,12 @@ def runSupermarQ() -> None:
     ts = QUtil.getTS()
     directory = "./qasm/SupermarQ/"
     outFile = './dataSets_V2/dataSets_SupermarQ/' + ts + '_data.csv'
+    createDataSet(directory, outFile)
+
+def runSmall() -> None:
+    ts = QUtil.getTS()
+    directory = "./qasm/QASMBench/small/"
+    outFile = './dataSets_V2/dataSets_Small/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
 
@@ -248,6 +255,7 @@ def drawESPDepthVar(dir):
 def main():
     QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
+    runSmall()
     #runNoise()
     #runESPHM()
     #runSupermarQ()
