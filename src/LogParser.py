@@ -1,21 +1,23 @@
 import matplotlib.pyplot as plt
 import sys
 
-def drawWallClockGraph(data):
+
+def drawNumQubitWallClockGraph(data):
 
     ax = plt.axes()
 
     for key in data.keys():
         ax.scatter(data[key]['num_qubits'], data[key]['wall_clock'], label=key)
 
-    ax.set_ylim(0,100)
+    ax.set_ylim(0, 100)
     ax.legend()
     ax.set_xlabel("Circuit Qubit Count")
     ax.set_ylabel("Wall Clock Time")
-    ax.set_title("Wall Clock Time vs. Circuit Qubit Count")
+    ax.set_title("Wall Clock Time vs. Circuit Qubit Count : n = 10")
     plt.show()
 
-def drawPeakRSSGraph(data):
+
+def drawNumQubitPeakRSSGraph(data):
 
     ax = plt.axes()
 
@@ -25,8 +27,37 @@ def drawPeakRSSGraph(data):
     ax.legend()
     ax.set_xlabel("Circuit Qubit Count")
     ax.set_ylabel("Peak RSS (KB)")
-    ax.set_title("Peak RSS vs. Circuit Qubit Count")
+    ax.set_title("Peak RSS vs. Circuit Qubit Count : n = 10")
     plt.show()
+
+def drawCircuitSizeWallClockGraph(data):
+
+    ax = plt.axes()
+
+    for key in data.keys():
+        ax.scatter(data[key]['circuit_size'], data[key]['wall_clock'], label=key)
+
+    ax.set_ylim(0, 100)
+    ax.legend()
+    ax.set_xlabel("Circuit Size")
+    ax.set_ylabel("Wall Clock Time")
+    ax.set_title("Wall Clock Time vs. Circuit Size : n = 10")
+    plt.show()
+
+
+def drawCircuitSizePeakRSSGraph(data):
+
+    ax = plt.axes()
+
+    for key in data.keys():
+        ax.scatter(data[key]['circuit_size'], data[key]['peak_rss'], label=key)
+
+    ax.legend()
+    ax.set_xlabel("Circuit Size")
+    ax.set_ylabel("Peak RSS (KB)")
+    ax.set_title("Peak RSS vs. Circuit Size : n = 10")
+    plt.show()
+
 
 def get_sec(time_str):
     """Get seconds from time."""
@@ -37,6 +68,7 @@ def get_sec(time_str):
         m, s = time_str.split(':')
         return int(m) * 60 + float(s)
 
+
 def cleanLog(file):
     with open(file) as f:
         lines = f.readlines()
@@ -46,6 +78,10 @@ def cleanLog(file):
             print(l, end='')
             continue
         elif "Mode" in l:
+            print(l, end='')
+            continue
+
+        elif 'CircuitSize' in l:
             print(l, end='')
             continue
 
@@ -69,14 +105,16 @@ def cleanLog(file):
             print(l, end='')
             continue
 
+    exit(0)
+
+
 def main():
 
     #cleanLog(sys.argv[1])
-    #return
 
     files = sys.argv[1:]
 
-    data = {}	
+    data = {}
     for file in files:
         with open(file) as f:
             lines = f.readlines()
@@ -93,11 +131,17 @@ def main():
                     data[mode]['system_time'] = []
                     data[mode]['wall_clock'] = []
                     data[mode]['peak_rss'] = []
+                    data[mode]['circuit_size'] = []
+                continue
+
+            elif 'CircuitSize' in l:
+                circuitSize = int(l.split(' ')[1])
+                data[mode]['circuit_size'].append(circuitSize)
                 continue
 
             elif 'NumQubits' in l:
-                width = int(l.split(' ')[1])
-                data[mode]['num_qubits'].append(width)
+                numQubits = int(l.split(' ')[1])
+                data[mode]['num_qubits'].append(numQubits)
                 continue
 
             elif 'User time' in l:
@@ -120,8 +164,11 @@ def main():
                 data[mode]['peak_rss'].append(prss)
                 continue
 
-    drawWallClockGraph(data)
-    drawPeakRSSGraph(data)
+    drawNumQubitWallClockGraph(data)
+    drawNumQubitPeakRSSGraph(data)
+    drawCircuitSizeWallClockGraph(data)
+    drawCircuitSizePeakRSSGraph(data)
+
 
 if __name__ == "__main__":
     main()

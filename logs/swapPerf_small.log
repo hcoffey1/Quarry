@@ -1,0 +1,432 @@
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 13
+NumQubits: 2
+	User time (seconds): 2.93
+	System time (seconds): 2.16
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.76
+	Maximum resident set size (kbytes): 549096
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 13
+NumQubits: 2
+	User time (seconds): 4.63
+	System time (seconds): 2.35
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.65
+	Maximum resident set size (kbytes): 1559332
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 1510
+NumQubits: 4
+	User time (seconds): 8.85
+	System time (seconds): 2.19
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:08.69
+	Maximum resident set size (kbytes): 581944
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 1510
+NumQubits: 4
+	User time (seconds): 12.23
+	System time (seconds): 2.47
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.41
+	Maximum resident set size (kbytes): 1570708
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 102
+NumQubits: 4
+	User time (seconds): 3.21
+	System time (seconds): 2.19
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.06
+	Maximum resident set size (kbytes): 575308
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 102
+NumQubits: 4
+	User time (seconds): 4.78
+	System time (seconds): 2.33
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.86
+	Maximum resident set size (kbytes): 1564976
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 37
+NumQubits: 4
+	User time (seconds): 3.21
+	System time (seconds): 2.03
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.96
+	Maximum resident set size (kbytes): 574352
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 37
+NumQubits: 4
+	User time (seconds): 4.82
+	System time (seconds): 2.40
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.91
+	Maximum resident set size (kbytes): 1559572
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 30
+NumQubits: 5
+	User time (seconds): 3.48
+	System time (seconds): 2.16
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.06
+	Maximum resident set size (kbytes): 576096
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 30
+NumQubits: 5
+	User time (seconds): 4.74
+	System time (seconds): 2.35
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.76
+	Maximum resident set size (kbytes): 1559752
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 7
+NumQubits: 2
+	User time (seconds): 3.01
+	System time (seconds): 2.10
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.83
+	Maximum resident set size (kbytes): 574036
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 7
+NumQubits: 2
+	User time (seconds): 4.56
+	System time (seconds): 2.35
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.72
+	Maximum resident set size (kbytes): 1560040
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 18
+NumQubits: 3
+	User time (seconds): 3.15
+	System time (seconds): 2.23
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.90
+	Maximum resident set size (kbytes): 574964
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 18
+NumQubits: 3
+	User time (seconds): 4.57
+	System time (seconds): 2.43
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.67
+	Maximum resident set size (kbytes): 1561888
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 27
+NumQubits: 4
+	User time (seconds): 3.36
+	System time (seconds): 2.23
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.97
+	Maximum resident set size (kbytes): 575456
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 27
+NumQubits: 4
+	User time (seconds): 4.51
+	System time (seconds): 2.49
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.67
+	Maximum resident set size (kbytes): 1565880
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 22
+NumQubits: 3
+	User time (seconds): 3.00
+	System time (seconds): 2.22
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.88
+	Maximum resident set size (kbytes): 572940
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 22
+NumQubits: 3
+	User time (seconds): 4.66
+	System time (seconds): 2.39
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.76
+	Maximum resident set size (kbytes): 1563140
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 32
+NumQubits: 4
+	User time (seconds): 3.03
+	System time (seconds): 2.15
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.92
+	Maximum resident set size (kbytes): 574052
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 32
+NumQubits: 4
+	User time (seconds): 4.61
+	System time (seconds): 2.40
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.68
+	Maximum resident set size (kbytes): 1566064
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 11
+NumQubits: 2
+	User time (seconds): 3.04
+	System time (seconds): 2.10
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.81
+	Maximum resident set size (kbytes): 573408
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 11
+NumQubits: 2
+	User time (seconds): 4.57
+	System time (seconds): 2.42
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.67
+	Maximum resident set size (kbytes): 1561968
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 8
+NumQubits: 4
+	User time (seconds): 2.91
+	System time (seconds): 2.13
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.89
+	Maximum resident set size (kbytes): 573180
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 8
+NumQubits: 4
+	User time (seconds): 4.55
+	System time (seconds): 2.51
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.73
+	Maximum resident set size (kbytes): 1563444
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 25
+NumQubits: 5
+	User time (seconds): 3.82
+	System time (seconds): 2.20
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.24
+	Maximum resident set size (kbytes): 577560
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 25
+NumQubits: 5
+	User time (seconds): 4.62
+	System time (seconds): 2.47
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.78
+	Maximum resident set size (kbytes): 1564212
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 16
+NumQubits: 4
+	User time (seconds): 3.49
+	System time (seconds): 2.25
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.14
+	Maximum resident set size (kbytes): 576516
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 16
+NumQubits: 4
+	User time (seconds): 4.70
+	System time (seconds): 2.43
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.84
+	Maximum resident set size (kbytes): 1561928
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 11
+NumQubits: 3
+	User time (seconds): 2.94
+	System time (seconds): 2.20
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.81
+	Maximum resident set size (kbytes): 573472
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 11
+NumQubits: 3
+	User time (seconds): 4.60
+	System time (seconds): 2.50
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.76
+	Maximum resident set size (kbytes): 1562640
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 16
+NumQubits: 5
+	User time (seconds): 2.93
+	System time (seconds): 2.22
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.82
+	Maximum resident set size (kbytes): 573500
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 16
+NumQubits: 5
+	User time (seconds): 4.45
+	System time (seconds): 2.46
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.69
+	Maximum resident set size (kbytes): 1562944
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 18
+NumQubits: 4
+	User time (seconds): 2.97
+	System time (seconds): 2.12
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.81
+	Maximum resident set size (kbytes): 574448
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 18
+NumQubits: 4
+	User time (seconds): 4.48
+	System time (seconds): 2.50
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.64
+	Maximum resident set size (kbytes): 1564516
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 22
+NumQubits: 3
+	User time (seconds): 3.17
+	System time (seconds): 2.21
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.95
+	Maximum resident set size (kbytes): 574392
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 22
+NumQubits: 3
+	User time (seconds): 4.52
+	System time (seconds): 2.50
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.72
+	Maximum resident set size (kbytes): 1567992
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 36
+NumQubits: 3
+	User time (seconds): 3.25
+	System time (seconds): 2.15
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.07
+	Maximum resident set size (kbytes): 574308
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 36
+NumQubits: 3
+	User time (seconds): 4.91
+	System time (seconds): 2.37
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.01
+	Maximum resident set size (kbytes): 1563312
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 8
+NumQubits: 4
+	User time (seconds): 2.94
+	System time (seconds): 2.14
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.77
+	Maximum resident set size (kbytes): 573792
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 8
+NumQubits: 4
+	User time (seconds): 4.64
+	System time (seconds): 2.36
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.71
+	Maximum resident set size (kbytes): 1562740
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 10
+NumQubits: 5
+	User time (seconds): 2.94
+	System time (seconds): 2.13
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.64
+	Maximum resident set size (kbytes): 550384
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 10
+NumQubits: 5
+	User time (seconds): 4.41
+	System time (seconds): 2.15
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.55
+	Maximum resident set size (kbytes): 1538144
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 9
+NumQubits: 3
+	User time (seconds): 3.18
+	System time (seconds): 2.25
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.98
+	Maximum resident set size (kbytes): 575272
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 9
+NumQubits: 3
+	User time (seconds): 4.65
+	System time (seconds): 2.48
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.82
+	Maximum resident set size (kbytes): 1558728
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 18
+NumQubits: 2
+	User time (seconds): 3.16
+	System time (seconds): 2.12
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.96
+	Maximum resident set size (kbytes): 574348
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 18
+NumQubits: 2
+	User time (seconds): 4.54
+	System time (seconds): 2.40
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.65
+	Maximum resident set size (kbytes): 1563772
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 228
+NumQubits: 2
+	User time (seconds): 3.93
+	System time (seconds): 2.17
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.81
+	Maximum resident set size (kbytes): 576576
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 228
+NumQubits: 2
+	User time (seconds): 5.91
+	System time (seconds): 2.47
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.07
+	Maximum resident set size (kbytes): 1567936
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 58
+NumQubits: 4
+	User time (seconds): 3.23
+	System time (seconds): 1.93
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.12
+	Maximum resident set size (kbytes): 573936
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 58
+NumQubits: 4
+	User time (seconds): 4.67
+	System time (seconds): 2.47
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.82
+	Maximum resident set size (kbytes): 1563544
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 21
+NumQubits: 3
+	User time (seconds): 3.22
+	System time (seconds): 2.16
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.95
+	Maximum resident set size (kbytes): 575396
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 21
+NumQubits: 3
+	User time (seconds): 4.44
+	System time (seconds): 2.52
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.64
+	Maximum resident set size (kbytes): 1562376
+QUARRY LOG HEADER ==========
+Mode: swap_compile
+CircuitSize: 119
+NumQubits: 5
+	User time (seconds): 4.19
+	System time (seconds): 2.26
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.47
+	Maximum resident set size (kbytes): 577656
+QUARRY LOG HEADER ==========
+Mode: swap_pred
+CircuitSize: 119
+NumQubits: 5
+	User time (seconds): 4.84
+	System time (seconds): 2.50
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.00
+	Maximum resident set size (kbytes): 1563740
