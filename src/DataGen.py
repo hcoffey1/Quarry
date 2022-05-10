@@ -6,6 +6,7 @@ from pandas import DataFrame
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit import transpile 
 import numpy as np
+from scipy import stats
 
 import matplotlib.pyplot as plt
 
@@ -57,13 +58,15 @@ def genDataEntry(qc, backend) -> DataFrame:
     dataEntry['L2'] = outEntries['L2']
     dataEntry['Hellinger'] = outEntries['Hellinger']
 
-    unroll_qc = transpile(qc, optimization_level=optimizationLevel, backend=backend)
+    unroll_qc = transpile(
+        qc, optimization_level=optimizationLevel, backend=backend)
     esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
-    dataEntry['ESP'] = esp 
+    dataEntry['ESP'] = esp
 
     return dataEntry
 
-def genESPHMDataEntry(qc : QuantumCircuit, backend) -> DataFrame:
+
+def genESPHMDataEntry(qc: QuantumCircuit, backend) -> DataFrame:
     """Collect circuit depth,width -> ESP"""
     optimizationLevel = 0
     dataEntry = {}
@@ -71,15 +74,18 @@ def genESPHMDataEntry(qc : QuantumCircuit, backend) -> DataFrame:
     dataEntry['width'] = qc.width()
     dataEntry['depth'] = qc.depth()
 
-    unroll_qc = transpile(qc, optimization_level=optimizationLevel, backend=backend)
+    unroll_qc = transpile(
+        qc, optimization_level=optimizationLevel, backend=backend)
     esp = QUtil.getESP(unroll_qc, NoiseModel.from_backend(backend))
 
-    dataEntry['ESP'] = esp 
+    dataEntry['ESP'] = esp
 
     return DataFrame(dataEntry, index=[0])
 
-#TODO: Standardize data set creation so we don't have a dozen functions doing this
+
+
 def createDataSet(directory, outputFile) -> None:
+    #TODO: Standardize data set creation so we don't have a dozen functions doing this
     entries = []
     fileList = getListOfFiles(directory)
     i = 0
@@ -87,14 +93,14 @@ def createDataSet(directory, outputFile) -> None:
         print("Running", inputFile, "...")
         if inputFile in QUtil.FAULT_CIRCUITS:
             print("Faulty circuit, skipping...")
-            i+=1
+            i += 1
             continue
 
         #Read in given circuit
         qc = QuantumCircuit.from_qasm_file(inputFile)
         qc.name = inputFile
 
-        n = 10 
+        n = 1
         backends = QUtil.getFakeBackends(qc, n)
         j = 0
         for be in backends:
@@ -110,6 +116,7 @@ def createDataSet(directory, outputFile) -> None:
     df = pd.concat(entries)
 
     df.to_csv(outputFile, index=False)
+
 
 def createESPHMDataSet(directory, outputFile) -> None:
     entries = []
@@ -132,7 +139,7 @@ def createESPHMDataSet(directory, outputFile) -> None:
             j = 0
             for be in backends:
                 print("\tRunning", be.configuration().backend_name, "on", inputFile,
-                    "(file: {}/{}, be: {}/{})...".format(i, len(fileList), j, len(backends)))
+                      "(file: {}/{}, be: {}/{})...".format(i, len(fileList), j, len(backends)))
                 e = genESPHMDataEntry(qc, be)
                 if not e.empty:
                     entries.append(e)
@@ -145,12 +152,28 @@ def createESPHMDataSet(directory, outputFile) -> None:
 
     df.to_csv(outputFile, index=False)
 
+def printSpearMan() -> None:
+    """Calculate SpearMan correlation coefficient for output features and ESP."""
+    outputMetrics = ['PST','TVD','Entropy','Swaps','L2','Hellinger']
+    corMetric = 'ESP'
+
+    #TODO: Generalize this so it isn't hard coded to these files.
+    files = getListOfFiles('./dataSets_V2/dataSets_Small/', '.csv')
+    files += getListOfFiles('./dataSets_V2/dataSets_Medium/', '.csv')
+
+    dfs = [pd.read_csv(f) for f in files]
+    df = pd.concat(dfs)
+    print("{:10}{:>20}{:>10}".format("Metric","Spearman Correlation","PValue"))
+    for metric in outputMetrics:
+        sm = stats.spearmanr(df[metric], df[corMetric])
+        print("{:10}{:20.3f}{:10.3f}".format(metric, sm.correlation, sm.pvalue))
 
 def runNoise() -> None:
     ts = QUtil.getTS()
     directory = "./qasm/Noise_Benchmarks/"
     outFile = './dataSets_V2/dataSets_Noise/' + ts + '_data.csv'
     createDataSet(directory, outFile)
+
 
 def runESPHM() -> None:
     ts = QUtil.getTS()
@@ -165,6 +188,7 @@ def runSupermarQ() -> None:
     outFile = './dataSets_V2/dataSets_SupermarQ/' + ts + '_data.csv'
     createDataSet(directory, outFile)
 
+
 def runSmall() -> None:
     ts = QUtil.getTS()
     directory = "./qasm/QASMBench/small/"
@@ -172,7 +196,14 @@ def runSmall() -> None:
     createDataSet(directory, outFile)
 
 
-def getListOfFiles(dirName):
+def runMedium() -> None:
+    ts = QUtil.getTS()
+    directory = "./qasm/QASMBench/medium/"
+    outFile = './dataSets_V2/dataSets_Medium/' + ts + '_data.csv'
+    createDataSet(directory, outFile)
+
+
+def getListOfFiles(dirName, ext='.qasm'):
     #https://thispointer.com/python-how-to-get-list-of-files-in-directory-and-sub-directories/
     # create a list of file and sub directories
     # names in the given directory
@@ -187,7 +218,7 @@ def getListOfFiles(dirName):
         # If entry is a directory then get the list of files in this directory
         if os.path.isdir(fullPath):
             allFiles = allFiles + getListOfFiles(fullPath)
-        elif entry.endswith('.qasm'):
+        elif entry.endswith(ext):
             allFiles.append(fullPath)
 
     return allFiles
@@ -228,8 +259,10 @@ def genSwapData(directory) -> None:
 
     df.to_csv(outFile, index=False)
 
+
 def drawESPDepthVar(dir):
-    files = [os.path.join(dir, f) for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]
+    files = [os.path.join(dir, f) for f in os.listdir(
+        dir) if os.path.isfile(os.path.join(dir, f))]
 
     #Read in entries
     dfs = [pd.read_csv(f) for f in files]
@@ -259,11 +292,11 @@ def drawESPDepthVar(dir):
     plt.show()
 
 
-
 def main():
-    QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
+    #QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
-    runSmall()
+    printSpearMan()
+    #runMedium()
     #runNoise()
     #runESPHM()
     #runSupermarQ()
