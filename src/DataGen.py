@@ -276,7 +276,7 @@ def drawESPDepthVar(dir):
     #Filter very large values out, these have an ESP of nearly 0
     df = df[df.depth < 700]
 
-    depthdata = (df['depth'])
+    depthdata = (df['size'])
 
     xdata = []
     ydata = []
@@ -287,22 +287,22 @@ def drawESPDepthVar(dir):
     ax = plt.axes()
     ax.scatter(xdata, ydata)
 
-    ax.set_xlabel("Circuit Depth")
+    ax.set_xlabel("Circuit Size")
     ax.set_ylabel("ESP Variance")
-    ax.set_title("Platform ESP Variance vs. Circuit Depth")
+    ax.set_title("Platform ESP Variance vs. Circuit Size")
     plt.show()
 
 
 def main():
     #QUtil.GLOBAL_BASIS_GATES = QUtil.getGlobalBasisGates()
 
-    printSpearMan()
+    #printSpearMan()
     #runMedium()
     #runNoise()
     #runESPHM()
     #runSupermarQ()
     #genSwapData("./qasm/QASMBench/")
-    #drawESPDepthVar("./dataSets_ESP")
+    drawESPDepthVar("./dataSets_ESP")
 
 
 if __name__ == "__main__":
