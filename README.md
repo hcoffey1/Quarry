@@ -1,4 +1,4 @@
-# Quarry: Providing fast quantum circuit fidelity estimation.
+# Quarry: Providing fast quantum circuit fidelity estimation. (University Course Project)
 
 ## Files
 
