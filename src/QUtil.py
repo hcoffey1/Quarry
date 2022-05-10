@@ -70,7 +70,10 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
     else:
         output["{}AvgNeighborDegree".format(label)] = 0
 
-    output["{}AvgClustering".format(label)] = networkx.average_clustering(G)
+    try:
+        output["{}AvgClustering".format(label)] = networkx.average_clustering(G)
+    except ZeroDivisionError:
+        output["{}AvgClustering".format(label)] = 0 
 
     #CX graph may not be connected.
     #isConnected() feature not supported for Graph()?
@@ -100,9 +103,14 @@ def getCxGraphMetrics(G: networkx.Graph) -> dict:
     for e in G.edges:
         weights.append(G[e[0]][e[1]]['weight'])
 
-    output['CXAverageWeight'] = average(weights)
-    output['CXMaxWeight'] = max(weights)
-    output['CXMinWeight'] = min(weights)
+    if weights:
+        output['CXAverageWeight'] = average(weights)
+        output['CXMaxWeight'] = max(weights)
+        output['CXMinWeight'] = min(weights)
+    else:
+        output['CXAverageWeight'] = 0
+        output['CXMaxWeight'] = 0
+        output['CXMinWeight'] = 0
 
     return output
 
@@ -298,7 +306,10 @@ def getMaxQubit(cm) -> int:
     return max(maxX, maxY)
 
 
-def getAverageDegree(cm) -> float:
+def getAverageDegree(cm : list) -> float:
+    if not cm:
+        return 0
+
     maxQubit = getMaxQubit(cm)
     return len(cm)/(1.0*maxQubit+1)
 
