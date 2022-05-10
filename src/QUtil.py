@@ -22,6 +22,7 @@ sys.path.insert(0, parentdir)
 import qiskit.test.mock.backends as BE
 import qasm.QASMBench.metrics.OpenQASMetric as QB
 
+#TODO: Should add qc.num_qubits to data collection. Width is qubits + clbits
 
 #0: Use all available cores
 MAX_JOBS = 24

@@ -6,13 +6,13 @@ def drawWallClockGraph(data):
     ax = plt.axes()
 
     for key in data.keys():
-        ax.scatter(data[key]['width'], data[key]['wall_clock'], label=key)
+        ax.scatter(data[key]['num_qubits'], data[key]['wall_clock'], label=key)
 
     ax.set_ylim(0,100)
     ax.legend()
-    ax.set_xlabel("Circuit Width")
+    ax.set_xlabel("Circuit Qubit Count")
     ax.set_ylabel("Wall Clock Time")
-    ax.set_title("Wall Clock Time vs. Circuit Width")
+    ax.set_title("Wall Clock Time vs. Circuit Qubit Count")
     plt.show()
 
 def drawPeakRSSGraph(data):
@@ -20,12 +20,12 @@ def drawPeakRSSGraph(data):
     ax = plt.axes()
 
     for key in data.keys():
-        ax.scatter(data[key]['width'], data[key]['peak_rss'], label=key)
+        ax.scatter(data[key]['num_qubits'], data[key]['peak_rss'], label=key)
 
     ax.legend()
-    ax.set_xlabel("Circuit Width")
+    ax.set_xlabel("Circuit Qubit Count")
     ax.set_ylabel("Peak RSS (KB)")
-    ax.set_title("Peak RSS vs. Circuit Width")
+    ax.set_title("Peak RSS vs. Circuit Qubit Count")
     plt.show()
 
 def get_sec(time_str):
@@ -37,7 +37,43 @@ def get_sec(time_str):
         m, s = time_str.split(':')
         return int(m) * 60 + float(s)
 
+def cleanLog(file):
+    with open(file) as f:
+        lines = f.readlines()
+
+    for l in lines:
+        if "QUARRY LOG HEADER" in l:
+            print(l, end='')
+            continue
+        elif "Mode" in l:
+            print(l, end='')
+            continue
+
+        elif 'NumQubits' in l:
+            print(l, end='')
+            continue
+
+        elif 'User time' in l:
+            print(l, end='')
+            continue
+
+        elif 'System time' in l:
+            print(l, end='')
+            continue
+
+        elif 'wall clock' in l:
+            print(l, end='')
+            continue
+
+        elif 'Maximum resident set size' in l:
+            print(l, end='')
+            continue
+
 def main():
+
+    #cleanLog(sys.argv[1])
+    #return
+
     files = sys.argv[1:]
 
     data = {}	
