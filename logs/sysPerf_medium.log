@@ -1,0 +1,480 @@
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 73
+NumQubits: 15
+	User time (seconds): 21528.53
+	System time (seconds): 12.48
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 20:20.78
+	Maximum resident set size (kbytes): 1227376
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 73
+NumQubits: 15
+	User time (seconds): 5.16
+	System time (seconds): 2.55
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.37
+	Maximum resident set size (kbytes): 1588256
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 73
+NumQubits: 15
+	User time (seconds): 12.49
+	System time (seconds): 2.57
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.77
+	Maximum resident set size (kbytes): 1713812
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 73
+NumQubits: 15
+	User time (seconds): 18.48
+	System time (seconds): 3.31
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.98
+	Maximum resident set size (kbytes): 717372
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 39
+NumQubits: 9
+	User time (seconds): 55.69
+	System time (seconds): 3.17
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.97
+	Maximum resident set size (kbytes): 837596
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 39
+NumQubits: 9
+	User time (seconds): 4.91
+	System time (seconds): 2.49
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.07
+	Maximum resident set size (kbytes): 1587672
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 39
+NumQubits: 9
+	User time (seconds): 11.22
+	System time (seconds): 2.50
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.38
+	Maximum resident set size (kbytes): 1714944
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 39
+NumQubits: 9
+	User time (seconds): 11.33
+	System time (seconds): 2.39
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.35
+	Maximum resident set size (kbytes): 715860
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 18
+NumQubits: 13
+	User time (seconds): 860.61
+	System time (seconds): 4.46
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:01.20
+	Maximum resident set size (kbytes): 982568
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 18
+NumQubits: 13
+	User time (seconds): 4.85
+	System time (seconds): 2.51
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.01
+	Maximum resident set size (kbytes): 1588020
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 18
+NumQubits: 13
+	User time (seconds): 10.92
+	System time (seconds): 2.48
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.07
+	Maximum resident set size (kbytes): 1714016
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 18
+NumQubits: 13
+	User time (seconds): 10.82
+	System time (seconds): 2.46
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:09.95
+	Maximum resident set size (kbytes): 715712
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 95
+NumQubits: 11
+	User time (seconds): 40877.61
+	System time (seconds): 14.41
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 35:02.23
+	Maximum resident set size (kbytes): 1474032
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 95
+NumQubits: 11
+	User time (seconds): 5.17
+	System time (seconds): 2.58
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.44
+	Maximum resident set size (kbytes): 1597684
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 95
+NumQubits: 11
+	User time (seconds): 12.34
+	System time (seconds): 2.64
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.65
+	Maximum resident set size (kbytes): 1718084
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 95
+NumQubits: 11
+	User time (seconds): 18.79
+	System time (seconds): 3.22
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.79
+	Maximum resident set size (kbytes): 718336
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 276
+NumQubits: 6
+	User time (seconds): 24.72
+	System time (seconds): 3.35
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.73
+	Maximum resident set size (kbytes): 801892
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 276
+NumQubits: 6
+	User time (seconds): 5.19
+	System time (seconds): 2.53
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.44
+	Maximum resident set size (kbytes): 1591604
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 276
+NumQubits: 6
+	User time (seconds): 10.91
+	System time (seconds): 2.44
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.00
+	Maximum resident set size (kbytes): 1697904
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 276
+NumQubits: 6
+	User time (seconds): 8.88
+	System time (seconds): 2.46
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:08.01
+	Maximum resident set size (kbytes): 659616
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 73
+NumQubits: 11
+	User time (seconds): 896.94
+	System time (seconds): 6.26
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:14.37
+	Maximum resident set size (kbytes): 1001328
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 73
+NumQubits: 11
+	User time (seconds): 4.94
+	System time (seconds): 2.61
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.22
+	Maximum resident set size (kbytes): 1586228
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 73
+NumQubits: 11
+	User time (seconds): 11.12
+	System time (seconds): 2.62
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.40
+	Maximum resident set size (kbytes): 1711648
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 73
+NumQubits: 11
+	User time (seconds): 12.15
+	System time (seconds): 2.45
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.70
+	Maximum resident set size (kbytes): 716224
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 19
+NumQubits: 10
+	User time (seconds): 256.75
+	System time (seconds): 4.79
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:30.21
+	Maximum resident set size (kbytes): 950528
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 19
+NumQubits: 10
+	User time (seconds): 4.88
+	System time (seconds): 2.53
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.18
+	Maximum resident set size (kbytes): 1581432
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 19
+NumQubits: 10
+	User time (seconds): 11.22
+	System time (seconds): 2.52
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.41
+	Maximum resident set size (kbytes): 1709540
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 19
+NumQubits: 10
+	User time (seconds): 11.77
+	System time (seconds): 2.59
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.50
+	Maximum resident set size (kbytes): 716332
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 76
+NumQubits: 15
+	User time (seconds): 2930.38
+	System time (seconds): 5.75
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:18.40
+	Maximum resident set size (kbytes): 1051328
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 76
+NumQubits: 15
+	User time (seconds): 5.12
+	System time (seconds): 2.53
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.29
+	Maximum resident set size (kbytes): 1591368
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 76
+NumQubits: 15
+	User time (seconds): 12.25
+	System time (seconds): 2.62
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.53
+	Maximum resident set size (kbytes): 1711500
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 76
+NumQubits: 15
+	User time (seconds): 13.76
+	System time (seconds): 2.73
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.27
+	Maximum resident set size (kbytes): 716720
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 490
+NumQubits: 10
+	User time (seconds): 1290.66
+	System time (seconds): 5.99
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:37.72
+	Maximum resident set size (kbytes): 960924
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 490
+NumQubits: 10
+	User time (seconds): 5.59
+	System time (seconds): 2.47
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.70
+	Maximum resident set size (kbytes): 1591424
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 490
+NumQubits: 10
+	User time (seconds): 12.49
+	System time (seconds): 2.60
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.74
+	Maximum resident set size (kbytes): 1711600
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 490
+NumQubits: 10
+	User time (seconds): 12.57
+	System time (seconds): 2.60
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.99
+	Maximum resident set size (kbytes): 721800
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 555
+NumQubits: 15
+	User time (seconds): 20628.19
+	System time (seconds): 9.79
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 20:23.60
+	Maximum resident set size (kbytes): 1434124
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 555
+NumQubits: 15
+	User time (seconds): 5.19
+	System time (seconds): 2.57
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.42
+	Maximum resident set size (kbytes): 1592940
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 555
+NumQubits: 15
+	User time (seconds): 12.11
+	System time (seconds): 2.68
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.43
+	Maximum resident set size (kbytes): 1718368
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 555
+NumQubits: 15
+	User time (seconds): 16.24
+	System time (seconds): 3.03
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.56
+	Maximum resident set size (kbytes): 718428
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 22
+NumQubits: 6
+	User time (seconds): 12.34
+	System time (seconds): 2.44
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:08.95
+	Maximum resident set size (kbytes): 742084
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 22
+NumQubits: 6
+	User time (seconds): 4.90
+	System time (seconds): 2.48
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.06
+	Maximum resident set size (kbytes): 1594216
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 22
+NumQubits: 6
+	User time (seconds): 9.14
+	System time (seconds): 2.54
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:09.33
+	Maximum resident set size (kbytes): 1697020
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 22
+NumQubits: 6
+	User time (seconds): 7.75
+	System time (seconds): 2.22
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.29
+	Maximum resident set size (kbytes): 657988
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 54
+NumQubits: 14
+	User time (seconds): 411.23
+	System time (seconds): 3.83
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:31.41
+	Maximum resident set size (kbytes): 915976
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 54
+NumQubits: 14
+	User time (seconds): 4.96
+	System time (seconds): 2.54
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.16
+	Maximum resident set size (kbytes): 1595072
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 54
+NumQubits: 14
+	User time (seconds): 11.21
+	System time (seconds): 2.43
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.36
+	Maximum resident set size (kbytes): 1714824
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 54
+NumQubits: 14
+	User time (seconds): 10.77
+	System time (seconds): 2.33
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.12
+	Maximum resident set size (kbytes): 715656
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 59
+NumQubits: 12
+	User time (seconds): 316.91
+	System time (seconds): 3.54
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:27.50
+	Maximum resident set size (kbytes): 899880
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 59
+NumQubits: 12
+	User time (seconds): 4.95
+	System time (seconds): 2.50
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.12
+	Maximum resident set size (kbytes): 1589948
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 59
+NumQubits: 12
+	User time (seconds): 11.37
+	System time (seconds): 2.55
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.59
+	Maximum resident set size (kbytes): 1714728
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 59
+NumQubits: 12
+	User time (seconds): 10.89
+	System time (seconds): 2.34
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.32
+	Maximum resident set size (kbytes): 715708
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 1016
+NumQubits: 8
+	User time (seconds): 422.77
+	System time (seconds): 5.65
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:39.54
+	Maximum resident set size (kbytes): 966552
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 1016
+NumQubits: 8
+	User time (seconds): 6.11
+	System time (seconds): 2.45
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.21
+	Maximum resident set size (kbytes): 1597804
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 1016
+NumQubits: 8
+	User time (seconds): 18.80
+	System time (seconds): 2.52
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:18.99
+	Maximum resident set size (kbytes): 1719640
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 1016
+NumQubits: 8
+	User time (seconds): 15.73
+	System time (seconds): 2.82
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.46
+	Maximum resident set size (kbytes): 720892
+QUARRY LOG HEADER ==========
+Mode: simulation
+CircuitSize: 43
+NumQubits: 8
+	User time (seconds): 27.29
+	System time (seconds): 3.59
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:12.15
+	Maximum resident set size (kbytes): 886056
+QUARRY LOG HEADER ==========
+Mode: p1
+CircuitSize: 43
+NumQubits: 8
+	User time (seconds): 5.03
+	System time (seconds): 2.46
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.15
+	Maximum resident set size (kbytes): 1590268
+QUARRY LOG HEADER ==========
+Mode: p2
+CircuitSize: 43
+NumQubits: 8
+	User time (seconds): 11.08
+	System time (seconds): 2.53
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.31
+	Maximum resident set size (kbytes): 1714528
+QUARRY LOG HEADER ==========
+Mode: esp
+CircuitSize: 43
+NumQubits: 8
+	User time (seconds): 10.16
+	System time (seconds): 2.30
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.14
+	Maximum resident set size (kbytes): 715124

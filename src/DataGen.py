@@ -73,6 +73,7 @@ def genESPHMDataEntry(qc: QuantumCircuit, backend) -> DataFrame:
 
     dataEntry['width'] = qc.width()
     dataEntry['depth'] = qc.depth()
+    dataEntry['size'] = qc.size()
 
     unroll_qc = transpile(
         qc, optimization_level=optimizationLevel, backend=backend)
