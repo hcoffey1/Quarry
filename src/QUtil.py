@@ -58,8 +58,14 @@ def getGraphMetrics(G: networkx.Graph, label: str) -> dict:
     output["{}GraphDensity".format(label)] = networkx.density(G)
     output["{}AvgConnectivity".format(
         label)] = networkx.average_node_connectivity(G)
-    output["{}AvgNeighborDegree".format(label)] = mean(
-        list(networkx.average_neighbor_degree(G).values()))
+
+    #If average neighbor degree list is empty, set mean to 0
+    avgNeighborDegreeList = list(networkx.average_neighbor_degree(G).values())
+    if len(avgNeighborDegreeList) != 0:
+        output["{}AvgNeighborDegree".format(label)] = mean(avgNeighborDegreeList)
+    else:
+        output["{}AvgNeighborDegree".format(label)] = 0
+
     output["{}AvgClustering".format(label)] = networkx.average_clustering(G)
 
     #CX graph may not be connected.
