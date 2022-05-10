@@ -28,7 +28,9 @@ MAX_JOBS = 24
 GLOBAL_BASIS_GATES = None
 FAULT_CIRCUITS = ['./qasm/QASMBench/small/ipea_n2/ipea_n2.qasm',
                   './qasm/QASMBench/small/vqe_uccsd_n4/vqe_uccsd_n4.qasm',
-                  './qasm/QASMBench/small/pea_n5/pea_n5.qasm']
+                  './qasm/QASMBench/small/pea_n5/pea_n5.qasm',
+                  './qasm/QASMBench/medium/vqe_uccsd_n6/vqe_uccsd_n6.qasm',
+                  './qasm/QASMBench/medium/vqe_uccsd_n8/vqe_uccsd_n8.qasm ']
 
 
 def drawWeightedGraph(G: networkx.Graph) -> None:
