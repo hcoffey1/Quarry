@@ -1,29 +1,56 @@
 # Quarry: Providing fast quantum circuit fidelity estimation. (University Course Project)
 
-## Files
+## Description
+We present Quarry, an assistant tool for providing
+fast quantum circuit fidelity estimations across a variety of
+computing platforms. Quarry processes these estimated values
+and provides researchers with recommendations for what platforms 
+their particular circuit would perform best on. Our design
+allows Quarry to use a variety of methods for determining
+these recommendations. A more detailed explanation
+and evaluation of the system is available in our
+[final report.](./pdf/Quarry_Final_Report.pdf)
 
-### `env.yml`
-Contains `Conda` dependencies. Run:
+## Dependencies
+
+`env.yml` contains `Conda` dependencies. Run:
 
 `conda env update --file env.yml`
 
 to make sure python environment is correctly configured.
 
-### `est.py`
-Takes a single argument specifying path to QASM file to estimate
-circuit fidelity on.
+## Usage
+General usage form:
 
-### `dataGen.py`
+`python ./src/Est.py file mode`
+
+To display help:
+
+`python ./src/Est.py -h`
+
+**Command line arguments**
+|Argument|Description|
+|---        |---|
+|file       |Path to qasm file|
+|mode       |Query mode|
+|-n         |Number of platforms to query|
+
+
+## File descriptions:
+### `Est.py`
+Main file used to query about a `qasm` file.
+
+### `DataGen.py`
 Run to generate a data set containing Qiskit backend and circuit
 fidelity information.
 
-### `Q_Util.py`
+### `QUtil.py`
 Misc. functions for use in other files.
 
-### `Eval_Metrics.py`
+### `EvalMetrics.py`
 Methods for calculating fidelity metrics.
 
-### Notes from talk
+## Notes from talk
 
 * Is ESP correlated with other metrics?
   - Spearman's rank correlation coefficient
